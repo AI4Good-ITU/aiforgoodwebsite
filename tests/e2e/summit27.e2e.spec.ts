@@ -113,12 +113,12 @@ test.describe('Summit 2027 (Blend)', () => {
     await expect(page.getByText('Opening ceremony: the state of AI in 2027')).toHaveCount(0)
 
     // Track chip narrows within the day, and the count reflects both
-    await page.getByRole('button', { name: 'Keynote', exact: true }).click()
+    await page.getByRole('radio', { name: 'Keynote', exact: true }).click()
     await expect(rows).toHaveCount(2)
     await expect(count).toHaveText('2 of 5 sessions on Sat 10 July · Keynote')
 
     // Back to All restores the day's full list
-    await page.getByRole('button', { name: 'All', exact: true }).click()
+    await page.getByRole('radio', { name: 'All', exact: true }).click()
     await expect(rows).toHaveCount(5)
   })
 
@@ -127,7 +127,7 @@ test.describe('Summit 2027 (Blend)', () => {
     await page.goto(URL)
     await page.locator('#speakers').scrollIntoViewIfNeeded()
 
-    const panel = page.locator('aside')
+    const panel = page.getByRole('dialog')
     await expect(panel).toHaveCount(0)
 
     await page.locator(mod('speaker')).filter({ hasText: 'Geoffrey Hinton' }).click()
@@ -149,6 +149,116 @@ test.describe('Summit 2027 (Blend)', () => {
     await expect(panel).toHaveCount(0)
   })
 
+  /*
+   * The three tests below cover what moving onto Radix was for. Each asserts
+   * behaviour the hand-rolled versions did not have.
+   */
+
+  test('day tabs follow the ARIA tabs keyboard pattern', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(URL)
+    await page.locator('#programme').scrollIntoViewIfNeeded()
+
+    const tabs = page.getByRole('tab')
+    await expect(tabs).toHaveCount(4)
+
+    // The strip is a single tab stop; focus lands on the selected tab.
+    await tabs.first().focus()
+    await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
+
+    // Arrow keys move selection along the strip.
+    await page.keyboard.press('ArrowRight')
+    await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true')
+    await expect(page.locator(mod('sessionCount'))).toContainText('Thu 8 July')
+
+    await page.keyboard.press('ArrowRight')
+    await expect(tabs.nth(2)).toHaveAttribute('aria-selected', 'true')
+
+    await page.keyboard.press('ArrowLeft')
+    await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true')
+
+    // End/Home jump to the ends.
+    await page.keyboard.press('End')
+    await expect(tabs.nth(3)).toHaveAttribute('aria-selected', 'true')
+    await page.keyboard.press('Home')
+    await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
+
+    // Each tab is wired to a panel.
+    const controls = await tabs.nth(0).getAttribute('aria-controls')
+    expect(controls).toBeTruthy()
+    await expect(page.locator(`#${controls}`)).toHaveAttribute('role', 'tabpanel')
+  })
+
+  test('filters expose single-select semantics', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(URL)
+    await page.locator('#programme').scrollIntoViewIfNeeded()
+
+    // A one-of-many filter is a radiogroup, not a row of toggle buttons.
+    const group = page.getByRole('radiogroup', { name: 'Track' })
+    await expect(group).toBeVisible()
+    await expect(group.getByRole('radio')).toHaveCount(7)
+    await expect(page.getByRole('radio', { name: 'All', exact: true })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
+
+    await page.getByRole('radio', { name: 'Health', exact: true }).click()
+    await expect(page.getByRole('radio', { name: 'Health', exact: true })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
+    await expect(page.getByRole('radio', { name: 'All', exact: true })).toHaveAttribute(
+      'aria-checked',
+      'false',
+    )
+
+    // Re-pressing the active option must not clear the selection.
+    await page.getByRole('radio', { name: 'Health', exact: true }).click()
+    await expect(page.getByRole('radio', { name: 'Health', exact: true })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
+    await expect(page.locator(mod('sessionCount'))).toContainText('· Health')
+  })
+
+  test('speaker panel traps focus, restores it, and locks scroll', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(URL)
+    await page.locator('#speakers').scrollIntoViewIfNeeded()
+
+    const trigger = page.locator(mod('speaker')).filter({ hasText: 'Timnit Gebru' })
+    await trigger.click()
+
+    const panel = page.getByRole('dialog')
+    await expect(panel).toBeVisible()
+
+    // Body scroll is locked while the panel is open.
+    expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toBe('hidden')
+
+    // Tab cycles within the panel and never escapes to the page behind it.
+    for (let i = 0; i < 8; i++) {
+      await page.keyboard.press('Tab')
+      const inside = await page.evaluate(() => {
+        const dialog = document.querySelector('[role="dialog"]')
+        return !!dialog && !!document.activeElement && dialog.contains(document.activeElement)
+      })
+      expect(inside, `focus escaped the panel after ${i + 1} Tab press(es)`).toBe(true)
+    }
+
+    // Closing returns focus to the card that opened it.
+    await page.keyboard.press('Escape')
+    await expect(panel).toHaveCount(0)
+    const restored = await page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null
+      return el?.textContent?.includes('Timnit Gebru') ?? false
+    })
+    expect(restored, 'focus was not restored to the triggering card').toBe(true)
+
+    // And scroll is released.
+    expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden')
+  })
+
   test('pass pricing toggles between early access and standard', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(URL)
@@ -162,12 +272,12 @@ test.describe('Summit 2027 (Blend)', () => {
     await expect(note).toHaveText('Early access rate, until 31 March 2027')
     await expect(page.locator(mod('passWas'))).toHaveText(['CHF 70', 'CHF 1,190', 'CHF 5,600'])
 
-    await page.getByRole('button', { name: 'Standard' }).click()
+    await page.getByRole('radio', { name: 'Standard' }).click()
     await expect(prices).toHaveText(['CHF 70', 'CHF 1,190', 'CHF 5,600'])
     await expect(note).toHaveText('Standard rate')
     await expect(page.locator(mod('passWas'))).toHaveCount(0)
 
-    await page.getByRole('button', { name: 'Early access' }).click()
+    await page.getByRole('radio', { name: 'Early access' }).click()
     await expect(prices).toHaveText(['CHF 50', 'CHF 890', 'CHF 4,900'])
 
     // Gold is the highlighted tier
@@ -188,9 +298,19 @@ test.describe('Summit 2027 (Blend)', () => {
     await page.mouse.wheel(0, 1200)
     await expect(nav).toHaveClass(/navShrunk/)
 
-    // Progress is no longer fully clipped
-    const clip = await progress.evaluate((el) => getComputedStyle(el).clipPath)
-    expect(clip).not.toContain('100%')
+    /*
+     * The bar is written inside a requestAnimationFrame callback, so poll
+     * rather than reading once — a single read can land before the frame runs.
+     */
+    await expect
+      .poll(
+        async () => {
+          const clip = await progress.evaluate((el) => getComputedStyle(el).clipPath)
+          return clip.includes('100%')
+        },
+        { timeout: 5000 },
+      )
+      .toBe(false)
 
     // Scrolling back up undocks it
     await page.mouse.wheel(0, -1200)
@@ -205,17 +325,22 @@ test.describe('Summit 2027 (Blend)', () => {
     const total = await reveals.count()
     expect(total).toBeGreaterThan(5)
 
-    // Walk the page so every observer fires
-    for (let i = 0; i < 24; i++) {
-      await page.mouse.wheel(0, 700)
-      await page.waitForTimeout(60)
-    }
-    await page.waitForTimeout(400)
-
-    const notShown = await reveals.evaluateAll(
-      (els) => els.filter((el) => !(el as HTMLElement).dataset.shown).length,
-    )
-    expect(notShown).toBe(0)
+    /*
+     * Keep advancing the page from inside the poll. The reveals fire from an
+     * IntersectionObserver, so a fixed scroll loop followed by one assertion
+     * races the observer — especially while the dev server compiles on demand.
+     */
+    await expect
+      .poll(
+        async () => {
+          await page.mouse.wheel(0, 900)
+          return reveals.evaluateAll(
+            (els) => els.filter((el) => !(el as HTMLElement).dataset.shown).length,
+          )
+        },
+        { timeout: 30000, intervals: [150] },
+      )
+      .toBe(0)
   })
 
   test('unbuilt destinations report themselves instead of navigating', async ({ page }) => {
@@ -223,10 +348,10 @@ test.describe('Summit 2027 (Blend)', () => {
     await page.goto(URL)
 
     const toast = page.locator(mod('toast'))
-    await expect(toast).not.toHaveClass(/toastShown/)
+    await expect(toast).not.toHaveClass(/shown/)
 
     await page.getByRole('button', { name: 'Register' }).click()
-    await expect(toast).toHaveClass(/toastShown/)
+    await expect(toast).toHaveClass(/shown/)
     await expect(toast).toContainText('Registration — not built in this prototype')
 
     // Still on the same page
