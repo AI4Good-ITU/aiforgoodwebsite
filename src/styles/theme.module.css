@@ -1,0 +1,40 @@
+/*
+ * Design tokens for the "Blend" direction — dark base, violet/cyan spectrum.
+ *
+ * Apply `.blend` to a page root. Everything below it, including the shared
+ * components in src/components/ui, reads these variables. Keeping the tokens
+ * here rather than in a page's stylesheet is what lets those components be
+ * used by any page instead of only the one they were written for.
+ *
+ * To add a second direction, add a sibling class exporting the same variable
+ * names; no component needs to change.
+ */
+.blend {
+  --bg: #0c1320;
+  --bg-2: #121c2c;
+  --bg-3: #1a2536;
+  --card: #121c2c;
+
+  --text: #ffffff;
+  --text-2: rgba(255, 255, 255, 0.66);
+  --text-3: rgba(255, 255, 255, 0.42);
+
+  --line: rgba(255, 255, 255, 0.13);
+  --line-2: rgba(255, 255, 255, 0.28);
+
+  /* Buttons read these; --btn-glow is set by call sites on hover. */
+  --btn-bg: #ffffff;
+  --btn-bg-h: #e8e4da;
+  --btn-fg: #0c1320;
+
+  --nav-bg: rgba(12, 19, 32, 0.84);
+  --band: #060a11;
+  --glow: rgba(255, 255, 255, 0.7);
+  --logo-tile: #ffffff;
+
+  --violet: #7b5cfa;
+  --cyan: #22d3ee;
+  --amber: #f5b93d;
+  --spec: linear-gradient(100deg, #7b5cfa, #22d3ee);
+  --spec-sat: 1;
+}
