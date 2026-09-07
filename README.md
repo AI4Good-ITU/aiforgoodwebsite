@@ -1,67 +1,62 @@
-# Payload Blank Template
+# AI for Good Website
 
-This template comes configured with the bare minimum to get started on anything you need.
+[Payload 3](https://payloadcms.com) + [Next.js](https://nextjs.org) + Postgres.
 
-## Quick start
+## Setup
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+```sh
+cp .env.example .env          # then set PAYLOAD_SECRET: openssl rand -hex 32
+docker-compose up -d postgres
+npm install
+npm run dev                   # http://localhost:3000/admin
+```
 
-## Quick Start - local setup
+Already have Postgres? Skip the `docker-compose` line and point `DATABASE_URL` at any empty database.
 
-To spin up this template locally, follow these steps:
+## Schema changes
 
-### Clone
+Dev auto-applies schema changes to your local DB on restart (`push` mode). Production does not — it only runs committed migrations. **Before deploying any field/collection change:**
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+```sh
+npm run migrate:create        # generate migration from schema diff -> src/migrations/
+npm run migrate:status        # what's applied
+```
 
-### Development
+Commit the generated file. Deploy runs `npm run migrate`.
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+## Commands
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+```sh
+npm run dev              # dev server
+npm run devsafe          # dev server, clean .next
+npm run build            # production build
+npm run start            # serve production build
+npm run migrate          # apply pending migrations
+npm run generate:types   # regenerate src/payload-types.ts after schema edits
+npm run test:int         # vitest (needs Postgres running)
+npm run test:e2e         # playwright
+```
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+## Layout
 
-#### Docker (Optional)
+| Path | What |
+|---|---|
+| [src/payload.config.ts](src/payload.config.ts) | Payload config, DB adapter |
+| [src/collections/](src/collections/) | `Users` (auth), `Media` (uploads) |
+| [src/app/(frontend)/](src/app/(frontend)/) | Public site |
+| [src/app/(payload)/](src/app/(payload)/) | Admin panel + REST/GraphQL routes |
+| [src/migrations/](src/migrations/) | Committed Postgres migrations |
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+## Docker
 
-To do so, follow these steps:
+`docker-compose up` runs app + DB; `docker-compose up -d postgres` runs just the DB (recommended — keep the dev server on the host). The `payload` service overrides `DATABASE_URL` to reach the DB at host `postgres`, so one `.env` works either way.
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+Data lives in the `pgdata` volume. `docker-compose down -v` wipes it.
 
-## How it works
+## Gotchas
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
-
-### Collections
-
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
-
-- #### Users (Authentication)
-
-  Users are auth-enabled collections that have access to the admin panel.
-
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
-
-- #### Media
-
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
-
-### Docker
-
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
-
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+- Hydration warning about `cz-shortcut-listen` on `<body>`? That's the ColorZilla extension, not the app. Disable it for localhost. The frontend layout already sets `suppressHydrationWarning`; the admin `<body>` is rendered by Payload and takes no props, so it can't be suppressed.
+- Dev credentials in [docker-compose.yml](docker-compose.yml) are throwaway. Use real ones in production.
+- Migrations are Postgres-specific SQL — generate them against Postgres.
+- Uploads go to `./media` on local disk. Add a storage adapter (S3, Vercel Blob) before deploying anywhere with an ephemeral filesystem.
+- [Dockerfile](Dockerfile) needs `output: 'standalone'`, already set in [next.config.ts](next.config.ts).
