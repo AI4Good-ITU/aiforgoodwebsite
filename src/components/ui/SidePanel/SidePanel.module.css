@@ -1,0 +1,114 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(16, 24, 40, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.scrim[data-state='open'] {
+  animation: fade 0.3s ease both;
+}
+
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 81;
+  width: 520px;
+  max-width: 92vw;
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+  overflow-y: auto;
+}
+
+.panel[data-state='open'] {
+  animation: slide-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.imageWrap {
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: #101828;
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.close:hover {
+  background: #fff;
+}
+
+/* When there is no image header the button needs its own stacking context. */
+.closeBare {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1;
+}
+
+.body {
+  padding: 36px 40px 48px;
+}
+
+.title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.subtitle {
+  margin-top: 10px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim[data-state='open'],
+  .panel[data-state='open'] {
+    animation-duration: 0.001s;
+  }
+}

@@ -1,0 +1,50 @@
+.list {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+
+.trigger {
+  appearance: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  /* Overlaps the list's own border so the active underline replaces it. */
+  padding: 14px 22px 16px;
+  margin-bottom: -1px;
+  font-family: inherit;
+  color: var(--text-3);
+  border-bottom: 2px solid transparent;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.trigger:hover {
+  color: var(--text-2);
+}
+
+.trigger[data-state='active'] {
+  color: var(--text);
+  border-bottom-color: var(--text);
+}
+
+.label {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.sub {
+  display: block;
+  margin-top: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.62;
+}

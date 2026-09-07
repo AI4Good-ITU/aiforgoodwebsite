@@ -63,31 +63,6 @@
   transform: none;
 }
 
-/* Small uppercase eyebrow with a glowing spectrum dot. */
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 13px;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-
-.eyebrow::before {
-  content: '';
-  flex: none;
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #7b5cfa, #22d3ee);
-  box-shadow:
-    0 0 10px rgba(34, 211, 238, 0.7),
-    0 0 18px rgba(123, 92, 250, 0.3);
-}
-
 .h2 {
   margin: 16px 0 0;
   font-weight: 600;
@@ -524,94 +499,12 @@
   background: var(--line);
 }
 
-/* ── Programme ─────────────────────────────────────────────── */
-
-.dayTabs {
-  display: flex;
-  gap: 8px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 22px;
-}
-
-.dayTab {
-  appearance: none;
-  border: none;
-  background: none;
-  cursor: pointer;
-  text-align: left;
-  padding: 14px 22px 16px;
-  margin-bottom: -1px;
-  font-family: inherit;
-  color: var(--text-3);
-  border-bottom: 2px solid transparent;
-  transition:
-    color 0.18s ease,
-    border-color 0.18s ease;
-}
-
-.dayTabActive {
-  color: var(--text);
-  border-bottom-color: var(--text);
-}
-
-.dayTabLabel {
-  display: block;
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.dayTabSub {
-  display: block;
-  margin-top: 7px;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0.62;
-}
-
 .trackRow {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
   margin-bottom: 8px;
-}
-
-.trackLabel {
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  margin-right: 6px;
-}
-
-.chip {
-  appearance: none;
-  cursor: pointer;
-  padding: 9px 16px;
-  border-radius: 999px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1;
-  background: transparent;
-  color: var(--text-2);
-  border: 1px solid var(--line);
-  transition:
-    background 0.18s ease,
-    color 0.18s ease,
-    border-color 0.18s ease;
-}
-
-.chipActive {
-  background: var(--btn-bg);
-  color: var(--btn-fg);
-  border-color: var(--btn-bg);
 }
 
 .sessions {
@@ -860,39 +753,6 @@
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.68);
   max-width: 320px;
-}
-
-/* ── Passes ────────────────────────────────────────────────── */
-
-.segmented {
-  display: inline-flex;
-  padding: 4px;
-  border-radius: 10px;
-  background: var(--bg-3);
-  border: 1px solid var(--line);
-}
-
-.seg {
-  appearance: none;
-  cursor: pointer;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  background: transparent;
-  color: var(--text-3);
-  transition:
-    background 0.18s ease,
-    color 0.18s ease;
-}
-
-.segActive {
-  background: var(--card);
-  color: var(--text);
-  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.14);
 }
 
 .passGrid {
@@ -1426,85 +1286,6 @@
   color: rgba(255, 255, 255, 0.45);
 }
 
-/* ── Speaker panel ─────────────────────────────────────────── */
-
-.panelScrim {
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  background: rgba(16, 24, 40, 0.5);
-  backdrop-filter: blur(3px);
-  animation: fade 0.3s ease both;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
-
-.panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 81;
-  width: 520px;
-  max-width: 92vw;
-  background: var(--bg);
-  border-left: 1px solid var(--line);
-  overflow-y: auto;
-  animation: slideIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.panelImgWrap {
-  position: relative;
-}
-
-.panelImg {
-  width: 100%;
-  height: 300px;
-  object-fit: cover;
-  display: block;
-}
-
-.panelClose {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  border: none;
-  background: rgba(255, 255, 255, 0.92);
-  color: #101828;
-  font-size: 19px;
-  line-height: 1;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.panelClose:hover {
-  background: #fff;
-}
-
-.panelBody {
-  padding: 36px 40px 48px;
-}
-
-.panelName {
-  margin: 0;
-  font-weight: 600;
-  font-size: 32px;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: var(--text);
-}
-
-.panelRole {
-  margin-top: 10px;
-  font-size: 16px;
-  line-height: 1.5;
-  color: var(--text-2);
-}
-
 .panelBio {
   margin: 24px 0 0;
   font-size: 16px;
@@ -1566,47 +1347,6 @@
   margin-top: 32px;
 }
 
-/* ── Toast ─────────────────────────────────────────────────── */
-
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: 34px;
-  z-index: 90;
-  transform: translate(-50%, 16px);
-  opacity: 0;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 22px;
-  border-radius: 999px;
-  background: #101828;
-  box-shadow: 0 16px 40px rgba(16, 24, 40, 0.3);
-  transition:
-    opacity 0.28s ease,
-    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.toastShown {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-.toastDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: #22d3ee;
-}
-
-.toastText {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.4;
-  color: #fff;
-}
-
 /* ── Button glow call sites ───────────────────────────────── */
 
 /* The shared Button paints `box-shadow: var(--btn-glow, none)`, so each
@@ -1644,26 +1384,6 @@
   to {
     opacity: 1;
     transform: none;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(40px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 

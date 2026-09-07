@@ -8,10 +8,19 @@
  */
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import styles from './summit.module.css'
-import { Badge, Button } from '@/components/ui'
+import {
+  Badge,
+  Button,
+  ChipGroup,
+  Eyebrow,
+  SegmentedControl,
+  SidePanel,
+  Tabs,
+  Toast,
+} from '@/components/ui'
 import { useHeroPointer, useReveal, useScrollChrome } from './motion'
 import {
   DAYS,
@@ -54,6 +63,12 @@ export default function SummitClient() {
   const [speakerIndex, setSpeakerIndex] = useState<number | null>(null)
   const [early, setEarly] = useState(true)
   const [toast, setToast] = useState<string | null>(null)
+  /*
+   * SidePanel portals into this instead of document.body, so the panel stays
+   * inside the themed subtree. Held in state rather than read off the ref
+   * during render, which React disallows.
+   */
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null)
 
   const rootRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
@@ -67,27 +82,27 @@ export default function SummitClient() {
   useReveal(rootRef, styles.shown)
   useHeroPointer(heroRef, glowRef, heroImgRef, heroTextRef)
 
-  const daySessions = SESSIONS[day]
-  const sessions = useMemo(
-    () => daySessions.filter((s) => track === 'All' || s.track === track),
-    [daySessions, track],
+  /*
+   * Each day is its own tab panel, so filtering is per-day rather than
+   * derived from the active day. Radix mounts only the selected panel.
+   */
+  const sessionsFor = useCallback(
+    (dayIndex: number) => SESSIONS[dayIndex].filter((s) => track === 'All' || s.track === track),
+    [track],
   )
 
-  const sessionCount = `${sessions.length} of ${daySessions.length} sessions on ${DAYS[day].label}${
-    track === 'All' ? '' : ` · ${track}`
-  }`
+  const countLabel = (dayIndex: number) => {
+    const shown = sessionsFor(dayIndex).length
+    const total = SESSIONS[dayIndex].length
+    const suffix = track === 'All' ? '' : ` · ${track}`
+    return `${shown} of ${total} sessions on ${DAYS[dayIndex].label}${suffix}`
+  }
 
   const activeSpeaker = speakerIndex === null ? null : SPEAKERS[speakerIndex]
 
-  /* Escape closes the speaker panel. */
-  useEffect(() => {
-    if (speakerIndex === null) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSpeakerIndex(null)
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [speakerIndex])
+  // Escape, focus trap and focus restore are handled by SidePanel's Radix Dialog.
+
+  useEffect(() => setPortalContainer(rootRef.current), [])
 
   useEffect(() => () => void (toastTimer.current && clearTimeout(toastTimer.current)), [])
 
@@ -223,7 +238,7 @@ export default function SummitClient() {
         >
           <div className={styles.sectionHead} style={{ marginBottom: 44 }}>
             <div>
-              <span className={styles.eyebrow}>The week</span>
+              <Eyebrow>The week</Eyebrow>
               <h2 className={styles.h2}>Six parts, one hall.</h2>
             </div>
             <a href="#programme" className={styles.moreLink}>
@@ -253,7 +268,7 @@ export default function SummitClient() {
         >
           <div className={styles.sectionHead} style={{ marginBottom: 36 }}>
             <div>
-              <span className={styles.eyebrow}>Programme</span>
+              <Eyebrow>Programme</Eyebrow>
               <h2 className={styles.h2}>
                 Four days, three stages,
                 <br />
@@ -265,56 +280,45 @@ export default function SummitClient() {
             </a>
           </div>
 
-          <div className={styles.dayTabs} role="tablist" aria-label="Programme day">
-            {DAYS.map((d, i) => (
-              <button
-                key={d.label}
-                type="button"
-                role="tab"
-                aria-selected={i === day}
-                onClick={() => setDay(i)}
-                className={`${styles.dayTab} ${i === day ? styles.dayTabActive : ''}`}
-              >
-                <span className={styles.dayTabLabel}>{d.label}</span>
-                <span className={styles.dayTabSub}>{d.sub}</span>
-              </button>
-            ))}
-          </div>
+          <Tabs.Root value={String(day)} onValueChange={(v) => setDay(Number(v))}>
+            <Tabs.List label="Programme day">
+              {DAYS.map((d, i) => (
+                <Tabs.Trigger key={d.label} value={String(i)} label={d.label} sub={d.sub} />
+              ))}
+            </Tabs.List>
 
-          <div className={styles.trackRow}>
-            <span className={styles.trackLabel}>Track</span>
-            {TRACKS.map((t) => (
-              <button
-                key={t}
-                type="button"
-                aria-pressed={t === track}
-                onClick={() => setTrack(t)}
-                className={`${styles.chip} ${t === track ? styles.chipActive : ''}`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-
-          <div className={styles.sessions}>
-            {sessions.map((s) => (
-              <div key={`${s.time}-${s.title}`} className={styles.sessionRow}>
-                <span className={styles.sessionTime}>{s.time}</span>
-                <span className={styles.sessionTitle}>{s.title}</span>
-                <span className={styles.sessionWho}>{s.who}</span>
-                <span className={styles.sessionStage}>{s.stage}</span>
-                <span className={styles.sessionBadge}>
-                  <Badge color={TRACK_BADGE[s.track] ?? 'gray'}>{s.track}</Badge>
-                </span>
-              </div>
-            ))}
-            <div className={styles.sessionFoot}>
-              <span className={styles.sessionCount}>{sessionCount}</span>
-              <a href="#programme" data-page="Session archive" className={styles.sessionArchive}>
-                Browse all 300+ sessions →
-              </a>
+            {/* Sits between the strip and the panels: a control over the
+                panel's contents rather than part of either. */}
+            <div className={styles.trackRow}>
+              <ChipGroup value={track} onValueChange={setTrack} options={TRACKS} label="Track" />
             </div>
-          </div>
+
+            {DAYS.map((d, i) => (
+              <Tabs.Content key={d.label} value={String(i)} className={styles.sessions}>
+                {sessionsFor(i).map((s) => (
+                  <div key={`${s.time}-${s.title}`} className={styles.sessionRow}>
+                    <span className={styles.sessionTime}>{s.time}</span>
+                    <span className={styles.sessionTitle}>{s.title}</span>
+                    <span className={styles.sessionWho}>{s.who}</span>
+                    <span className={styles.sessionStage}>{s.stage}</span>
+                    <span className={styles.sessionBadge}>
+                      <Badge color={TRACK_BADGE[s.track] ?? 'gray'}>{s.track}</Badge>
+                    </span>
+                  </div>
+                ))}
+                <div className={styles.sessionFoot}>
+                  <span className={styles.sessionCount}>{countLabel(i)}</span>
+                  <a
+                    href="#programme"
+                    data-page="Session archive"
+                    className={styles.sessionArchive}
+                  >
+                    Browse all 300+ sessions →
+                  </a>
+                </div>
+              </Tabs.Content>
+            ))}
+          </Tabs.Root>
         </div>
       </section>
 
@@ -327,7 +331,7 @@ export default function SummitClient() {
         >
           <div className={styles.sectionHead} style={{ marginBottom: 14 }}>
             <div>
-              <span className={styles.eyebrow}>Speakers</span>
+              <Eyebrow>Speakers</Eyebrow>
               <h2 className={styles.h2}>Who takes the stage</h2>
             </div>
             <a href="#speakers" data-page="Speaker index" className={styles.moreLink}>
@@ -384,7 +388,7 @@ export default function SummitClient() {
             />
           </div>
           <div className={`${styles.exhibitionCopy} ${styles.reveal}`} data-reveal="1">
-            <span className={styles.eyebrow}>The exhibition</span>
+            <Eyebrow>The exhibition</Eyebrow>
             <h2 className={styles.exhibitionTitle}>Two hundred stands you can actually touch.</h2>
             <p className={styles.exhibitionBody}>
               Humanoid robots, brain-computer interfaces, autonomous systems, quantum demonstrations
@@ -444,27 +448,18 @@ export default function SummitClient() {
         >
           <div className={styles.sectionHead} style={{ marginBottom: 14 }}>
             <div>
-              <span className={styles.eyebrow}>Passes</span>
+              <Eyebrow>Passes</Eyebrow>
               <h2 className={styles.h2}>Choose your pass</h2>
             </div>
-            <div className={styles.segmented}>
-              <button
-                type="button"
-                aria-pressed={early}
-                onClick={() => setEarly(true)}
-                className={`${styles.seg} ${early ? styles.segActive : ''}`}
-              >
-                Early access
-              </button>
-              <button
-                type="button"
-                aria-pressed={!early}
-                onClick={() => setEarly(false)}
-                className={`${styles.seg} ${!early ? styles.segActive : ''}`}
-              >
-                Standard
-              </button>
-            </div>
+            <SegmentedControl
+              label="Pricing tier"
+              value={early ? 'early' : 'standard'}
+              onValueChange={(v) => setEarly(v === 'early')}
+              options={[
+                { value: 'early', label: 'Early access' },
+                { value: 'standard', label: 'Standard' },
+              ]}
+            />
           </div>
           <p className={styles.lede}>
             One entry point for the exhibition, one for the full summit, one for the room where the
@@ -575,7 +570,7 @@ export default function SummitClient() {
           data-reveal="1"
           style={{ maxWidth: 1360, margin: '0 auto', padding: '88px 48px 40px' }}
         >
-          <span className={styles.eyebrow}>Practical</span>
+          <Eyebrow>Practical</Eyebrow>
           <div className={styles.sectionHead} style={{ margin: '16px 0 40px' }}>
             <h2 className={styles.h2} style={{ margin: 0 }}>
               Getting to Geneva
@@ -643,7 +638,7 @@ export default function SummitClient() {
               marginBottom: 30,
             }}
           >
-            <span className={styles.eyebrow}>Partners &amp; sponsors</span>
+            <Eyebrow>Partners &amp; sponsors</Eyebrow>
             <a href="#partners" data-page="Sponsorship brochure" className={styles.moreLink}>
               Sponsorship brochure →
             </a>
@@ -656,7 +651,7 @@ export default function SummitClient() {
             ))}
           </div>
           <div className={styles.mediaBlock}>
-            <span className={styles.eyebrow}>Media partners</span>
+            <Eyebrow>Media partners</Eyebrow>
             <div className={styles.logoGrid} style={{ marginTop: 20 }}>
               {MEDIA_LOGOS.map((l) => (
                 <div key={l.name} className={`${styles.logoTile} ${styles.logoTileSm}`}>
@@ -784,61 +779,42 @@ export default function SummitClient() {
       </footer>
 
       {/* ── Speaker panel ── */}
-      {activeSpeaker ? (
-        <>
-          <button
-            type="button"
-            aria-label="Close speaker details"
-            className={styles.panelScrim}
-            onClick={() => setSpeakerIndex(null)}
-          />
-          <aside className={styles.panel} aria-label={`${activeSpeaker.name} details`}>
-            <div className={styles.panelImgWrap}>
-              <img className={styles.panelImg} src={activeSpeaker.img} alt={activeSpeaker.name} />
-              <button
-                type="button"
-                aria-label="Close"
-                className={styles.panelClose}
-                onClick={() => setSpeakerIndex(null)}
-              >
-                ×
-              </button>
-            </div>
-            <div className={styles.panelBody}>
-              <h3 className={styles.panelName}>{activeSpeaker.name}</h3>
-              <div className={styles.panelRole}>{activeSpeaker.role}</div>
-              <p className={styles.panelBio}>{activeSpeaker.bio}</p>
-              <div className={styles.panelSessions}>
-                <span className={styles.panelSectionTitle}>Sessions</span>
-                <div className={styles.panelSessionList}>
-                  {activeSpeaker.sessions.map((s) => (
-                    <div key={s.title} className={styles.panelSession}>
-                      <span className={styles.panelSessionWhen}>{s.when}</span>
-                      <span className={styles.panelSessionTitle}>{s.title}</span>
-                      <span className={styles.panelSessionStage}>{s.stage}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className={styles.panelCta} data-page="Speaker profile">
-                <Button size="lg" hierarchy="primary" fullWidth>
-                  Full profile
-                </Button>
+      <SidePanel
+        open={activeSpeaker !== null}
+        onOpenChange={(next) => {
+          if (!next) setSpeakerIndex(null)
+        }}
+        title={activeSpeaker?.name ?? ''}
+        subtitle={activeSpeaker?.role}
+        image={activeSpeaker ? { src: activeSpeaker.img, alt: activeSpeaker.name } : undefined}
+        container={portalContainer}
+      >
+        {activeSpeaker ? (
+          <>
+            <p className={styles.panelBio}>{activeSpeaker.bio}</p>
+            <div className={styles.panelSessions}>
+              <span className={styles.panelSectionTitle}>Sessions</span>
+              <div className={styles.panelSessionList}>
+                {activeSpeaker.sessions.map((s) => (
+                  <div key={s.title} className={styles.panelSession}>
+                    <span className={styles.panelSessionWhen}>{s.when}</span>
+                    <span className={styles.panelSessionTitle}>{s.title}</span>
+                    <span className={styles.panelSessionStage}>{s.stage}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          </aside>
-        </>
-      ) : null}
+            <div className={styles.panelCta} data-page="Speaker profile">
+              <Button size="lg" hierarchy="primary" fullWidth>
+                Full profile
+              </Button>
+            </div>
+          </>
+        ) : null}
+      </SidePanel>
 
       {/* ── Toast ── */}
-      <div
-        className={`${styles.toast} ${toast ? styles.toastShown : ''}`}
-        role="status"
-        aria-live="polite"
-      >
-        <span className={styles.toastDot} />
-        <span className={styles.toastText}>{toast} — not built in this prototype</span>
-      </div>
+      <Toast message={toast ? `${toast} — not built in this prototype` : null} />
     </div>
   )
 }
