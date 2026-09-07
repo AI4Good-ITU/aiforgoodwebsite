@@ -1,0 +1,44 @@
+services:
+  # Postgres is the only service you need for local development if you run the
+  # Next.js dev server on the host (`npm run dev`). Start it alone with:
+  #   docker-compose up postgres
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: payload
+      POSTGRES_PASSWORD: payload
+      POSTGRES_DB: aiforgoodwebsite
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U payload -d aiforgoodwebsite']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Optional: run the app in Docker too, with `docker-compose up`.
+  payload:
+    image: node:22-alpine
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    working_dir: /home/node/app/
+    command: sh -c "apk add --no-cache libc6-compat && npm install && npm run dev"
+    env_file:
+      - .env
+    # Overrides DATABASE_URL from .env: inside the Compose network the database
+    # is reachable at host `postgres`, not 127.0.0.1.
+    environment:
+      DATABASE_URL: postgres://payload:payload@postgres:5432/aiforgoodwebsite
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  node_modules:
