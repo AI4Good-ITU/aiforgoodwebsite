@@ -9,8 +9,12 @@
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  /* The Blend direction is a fixed desktop composition. */
-  min-width: 1280px;
+  /*
+   * The horizontal gutter every full-bleed band and section shares. Stepping
+   * it here is what keeps the edges of the composition aligned across
+   * breakpoints — no section sets its own side padding in px.
+   */
+  --gutter: 48px;
   font-family: var(--font-avenir), 'Inter', system-ui, sans-serif;
   /* The frontend's global stylesheet sets font-size:18px / line-height:32px on
      html and body. Reset both here so this subtree starts from the same
@@ -23,6 +27,24 @@
 .root *::before,
 .root *::after {
   box-sizing: border-box;
+}
+
+@media (max-width: 1180px) {
+  .root {
+    --gutter: 40px;
+  }
+}
+
+@media (max-width: 960px) {
+  .root {
+    --gutter: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .root {
+    --gutter: 20px;
+  }
 }
 
 /* Wrapped in :where() so this reset carries zero specificity. As `.root a` it
@@ -38,7 +60,13 @@
 .shell {
   max-width: 1360px;
   margin: 0 auto;
-  padding: 0 48px;
+  padding: 0 var(--gutter);
+}
+
+/* Width-only container, for the sections that set their own padding. */
+.wide {
+  max-width: 1360px;
+  margin: 0 auto;
 }
 
 .section {
@@ -46,7 +74,7 @@
 }
 
 .sectionPad {
-  padding: 88px 48px 96px;
+  padding: clamp(56px, 7vw, 88px) var(--gutter) clamp(60px, 7.6vw, 96px);
 }
 
 /* Reveal-on-scroll. `.shown` is added by the observer. */
@@ -66,7 +94,7 @@
 .h2 {
   margin: 16px 0 0;
   font-weight: 600;
-  font-size: 44px;
+  font-size: clamp(29px, 3.4vw, 44px);
   line-height: 1.04;
   letter-spacing: -0.03em;
   color: var(--text);
@@ -297,7 +325,7 @@
 .heroTitle {
   margin: 0;
   font-weight: 600;
-  font-size: 94px;
+  font-size: clamp(40px, 7.4vw, 94px);
   line-height: 0.92;
   letter-spacing: -0.04em;
   color: #fff;
@@ -351,6 +379,9 @@
   inset: -6%;
   width: 112%;
   height: 112%;
+  /* The frontend's global `img { max-width: 100% }` was capping this at 100%,
+     so the photo sat 6% short of its right edge at every width. */
+  max-width: none;
   object-fit: cover;
   object-position: center 26%;
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -415,7 +446,7 @@
 
 .statNum {
   font-weight: 700;
-  font-size: 74px;
+  font-size: clamp(46px, 5.8vw, 74px);
   line-height: 1;
   letter-spacing: -0.04em;
   color: #fff;
@@ -597,6 +628,12 @@
   text-align: left;
   display: block;
   width: 100%;
+  /*
+   * A button centres its own contents vertically, and a grid item stretches to
+   * its row. Together that dropped every card whose neighbour had a two-line
+   * role by half the difference. Hug the content instead of the row.
+   */
+  align-self: start;
 }
 
 /* The shadow alternates violet/cyan down the grid; both values are set
@@ -668,7 +705,7 @@
 .exhibitionTitle {
   margin: 20px 0 0;
   font-weight: 600;
-  font-size: 42px;
+  font-size: clamp(28px, 3.3vw, 42px);
   line-height: 1.08;
   letter-spacing: -0.03em;
   color: var(--text);
@@ -825,14 +862,19 @@
   display: flex;
   align-items: baseline;
   gap: 12px;
+  /* If the pair will not fit, the old price drops to its own line rather than
+     the row overflowing the card. */
+  flex-wrap: wrap;
 }
 
 .passPrice {
   font-weight: 700;
-  font-size: 46px;
+  font-size: clamp(32px, 3.3vw, 46px);
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--text);
+  /* "CHF 4,900" is one token; breaking it across lines reads as two prices. */
+  white-space: nowrap;
 }
 
 .passWas {
@@ -841,6 +883,7 @@
   line-height: 1;
   color: var(--text-3);
   text-decoration: line-through;
+  white-space: nowrap;
 }
 
 .passNote {
@@ -906,7 +949,7 @@
   align-items: center;
   gap: 48px;
   flex-wrap: wrap;
-  padding: 64px 48px;
+  padding: clamp(44px, 5vw, 64px) var(--gutter);
 }
 
 .dialogueDates {
@@ -915,7 +958,7 @@
 
 .dialogueDay {
   font-weight: 700;
-  font-size: 42px;
+  font-size: clamp(34px, 3.3vw, 42px);
   line-height: 1;
   color: #7b5cfa;
 }
@@ -932,13 +975,14 @@
 
 .dialogueBody {
   flex: 1;
-  min-width: 420px;
+  /* A floor, but never wider than the row itself. */
+  min-width: min(420px, 100%);
 }
 
 .dialogueTitle {
   margin: 0;
   font-weight: 600;
-  font-size: 26px;
+  font-size: clamp(20px, 2.1vw, 26px);
   line-height: 1.3;
   color: #fff;
   letter-spacing: -0.01em;
@@ -974,6 +1018,19 @@
 }
 
 /* ── Geneva ────────────────────────────────────────────────── */
+
+/*
+ * The Geneva and Partners blocks set their own vertical rhythm rather than
+ * using .sectionPad. These were inline `style` props, which outrank every
+ * media query below and so pinned the 48px gutter at each width.
+ */
+.genevaTop {
+  padding: clamp(56px, 7vw, 88px) var(--gutter) 40px;
+}
+
+.genevaBottom {
+  padding: 40px var(--gutter) clamp(64px, 7.6vw, 96px);
+}
 
 .practicalGrid {
   display: grid;
@@ -1026,8 +1083,8 @@
 
 .venueCopy {
   position: absolute;
-  left: 48px;
-  right: 48px;
+  left: var(--gutter);
+  right: var(--gutter);
   bottom: 40px;
   display: flex;
   align-items: flex-end;
@@ -1037,7 +1094,7 @@
 
 .venueName {
   font-weight: 600;
-  font-size: 26px;
+  font-size: clamp(20px, 2.1vw, 26px);
   color: #fff;
 }
 
@@ -1058,6 +1115,19 @@
 }
 
 /* ── Partners ──────────────────────────────────────────────── */
+
+.partnersPad {
+  padding: clamp(52px, 6.4vw, 80px) var(--gutter);
+}
+
+.partnersHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
 
 .logoGrid {
   display: grid;
@@ -1177,13 +1247,13 @@
   justify-content: space-between;
   gap: 40px;
   flex-wrap: wrap;
-  padding: 88px 48px;
+  padding: clamp(56px, 7vw, 88px) var(--gutter);
 }
 
 .closingTitle {
   margin: 0;
   font-weight: 700;
-  font-size: 60px;
+  font-size: clamp(32px, 4.6vw, 60px);
   line-height: 1;
   letter-spacing: -0.035em;
   color: #fff;
@@ -1226,7 +1296,7 @@
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr 1fr;
   gap: 40px;
-  padding: 64px 48px 40px;
+  padding: clamp(48px, 5vw, 64px) var(--gutter) 40px;
 }
 
 .footerLogo {
@@ -1269,7 +1339,7 @@
 }
 
 .footerBase {
-  padding: 0 48px 44px;
+  padding: 0 var(--gutter) 44px;
 }
 
 .footerBaseInner {
@@ -1405,5 +1475,538 @@
   .root *::after {
     animation-duration: 0.001s !important;
     transition-duration: 0.001s !important;
+  }
+}
+
+/* ── Mobile nav ────────────────────────────────────────────── */
+
+/*
+ * The six links plus Register stop fitting beside the logo below 900px, so
+ * they move into a sheet behind this button (see SummitClient — it reuses the
+ * shared SidePanel, which already traps focus and closes on Escape).
+ */
+.navToggle {
+  display: none;
+  appearance: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -10px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.navToggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.menuLinks {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.menuLink {
+  padding: 17px 0;
+  font-weight: 600;
+  font-size: 19px;
+  line-height: 1.2;
+  color: var(--text);
+  border-bottom: 1px solid var(--line);
+}
+
+.menuCta {
+  margin-top: 30px;
+}
+
+/* ── Responsive ────────────────────────────────────────────────
+ *
+ * Desktop-first: the rules above are the 1360px composition, and each block
+ * below relaxes one part of it. Shared measurements (side gutters, display
+ * type) are handled by --gutter and clamp() rather than repeated here, so
+ * these blocks only carry the changes that are genuinely structural — grids
+ * that change shape, rows that re-flow, chrome that swaps out.
+ * ───────────────────────────────────────────────────────────── */
+
+/* ── ≤1180px — laptop ── */
+@media (max-width: 1180px) {
+  .navLinks {
+    gap: 20px;
+  }
+
+  .partRow {
+    grid-template-columns: 72px 1fr 1.6fr 120px;
+    gap: 22px;
+  }
+
+  .sessionRow {
+    grid-template-columns: 84px 1fr 1.15fr 132px 112px;
+    gap: 18px;
+  }
+
+  .speakerGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .exhibitionCopy {
+    padding: clamp(64px, 8vw, 96px) var(--gutter);
+  }
+}
+
+/* ── ≤1024px — tablet landscape ── */
+@media (max-width: 1024px) {
+  /*
+   * Five columns no longer hold a title and a speaker list side by side, so
+   * the row becomes two lines: the headline data first, the detail beneath.
+   */
+  .sessionRow {
+    grid-template-columns: 84px 1fr auto;
+    grid-template-areas:
+      'time  title badge'
+      '.     who   stage';
+    align-items: start;
+    row-gap: 8px;
+    column-gap: 18px;
+  }
+
+  .sessionTime {
+    grid-area: time;
+    padding-top: 4px;
+  }
+
+  .sessionTitle {
+    grid-area: title;
+  }
+
+  .sessionBadge {
+    grid-area: badge;
+  }
+
+  .sessionWho {
+    grid-area: who;
+  }
+
+  .sessionStage {
+    grid-area: stage;
+    justify-self: end;
+    text-align: right;
+  }
+
+  .practicalGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px 28px;
+  }
+
+  .logoGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ── ≤960px — tablet ── */
+@media (max-width: 960px) {
+  /* Three full-bleed panels become two, with the odd one out spanning. */
+  .highlights {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .highlight {
+    min-height: 360px;
+  }
+
+  .highlight:last-child {
+    grid-column: 1 / -1;
+    min-height: 320px;
+  }
+
+  /*
+   * The desktop scrim runs left-to-right, which works because the wide crop is
+   * dark along its bottom edge anyway. A narrower crop of the same photo puts
+   * the lit screens behind the address, so darken the bottom instead.
+   */
+  .venueScrim {
+    background: linear-gradient(180deg, rgba(16, 24, 40, 0.15) 28%, rgba(16, 24, 40, 0.88) 100%);
+  }
+}
+
+/*
+ * Passes. Three cards hold a price and its struck-through predecessor on one
+ * line down to about 1100px; below that the pair wraps and the tiers stop
+ * being comparable at a glance, so the grid goes to one readable column
+ * rather than three cramped ones.
+ */
+@media (min-width: 1101px) and (max-width: 1180px) {
+  .passCard {
+    padding: 30px 24px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .passGrid {
+    grid-template-columns: 1fr;
+    max-width: 560px;
+    gap: 18px;
+  }
+}
+
+/* ── ≤900px — the desktop composition breaks up ── */
+@media (max-width: 900px) {
+  /* Nav links move into the sheet. */
+  .navLinks {
+    display: none;
+  }
+
+  .navToggle {
+    display: inline-flex;
+  }
+
+  .navInner {
+    gap: 12px;
+  }
+
+  /* Hero: copy over photo rather than beside it. */
+  .heroGrid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .heroText {
+    padding: 28px 0 44px;
+  }
+
+  .heroMeta {
+    margin-bottom: 28px;
+  }
+
+  .heroActions {
+    margin-top: 36px;
+  }
+
+  /*
+   * The photo is absolutely positioned inside this box, which took its height
+   * from the two-column grid row. On one column it needs its own.
+   */
+  .heroMedia {
+    margin: 0 0 56px;
+    aspect-ratio: 16 / 10;
+  }
+
+  .exhibitionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .exhibitionMedia {
+    min-height: 0;
+    aspect-ratio: 3 / 2;
+  }
+
+  /* Six numbered rows: title and access on the first line, blurb under. */
+  .partRow {
+    grid-template-columns: 56px 1fr auto;
+    grid-template-areas:
+      'num title access'
+      '.   desc  desc';
+    align-items: baseline;
+    row-gap: 8px;
+    column-gap: 20px;
+  }
+
+  .partNum {
+    grid-area: num;
+    font-size: 24px;
+  }
+
+  .partTitle {
+    grid-area: title;
+  }
+
+  .partAccess {
+    grid-area: access;
+  }
+
+  .partDesc {
+    grid-area: desc;
+  }
+
+  .newsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* The about column keeps its own row above the three link columns. */
+  .footerGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+
+  .footerGrid > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .footerAbout {
+    max-width: 560px;
+  }
+}
+
+/* ── ≤720px — large phone ── */
+@media (max-width: 720px) {
+  /* A heading and its "more" link stop sharing a baseline. */
+  .sectionHead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .moreLink {
+    /* Restores a comfortable tap target once it is on its own line. */
+    padding-bottom: 8px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .stat {
+    padding: 34px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .stat:first-child {
+    border-top: none;
+  }
+
+  .statLabel {
+    max-width: none;
+  }
+
+  .speakerGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .highlights {
+    grid-template-columns: 1fr;
+  }
+
+  .highlight,
+  .highlight:last-child {
+    min-height: 300px;
+  }
+
+  .highlightCopy {
+    padding: 26px var(--gutter);
+  }
+
+  .highlightDesc {
+    max-width: none;
+  }
+
+  .logoGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .logoTile {
+    height: 70px;
+    padding: 14px 18px;
+  }
+
+  .logoTileSm {
+    height: 62px;
+  }
+
+  .newsGrid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .newsCard {
+    padding: 24px 0;
+  }
+
+  .dialogueInner {
+    gap: 26px;
+  }
+
+  .dialogueDates {
+    min-width: 0;
+  }
+
+  .passFoot {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .venue {
+    height: 300px;
+  }
+
+  .venueCopy {
+    bottom: 26px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .closingInner {
+    align-items: flex-start;
+    gap: 30px;
+  }
+}
+
+/* ── ≤560px — phone ── */
+@media (max-width: 560px) {
+  .section {
+    scroll-margin-top: 76px;
+  }
+
+  .hero {
+    padding-top: 92px;
+  }
+
+  .heroMedia {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* Side by side these two run past the viewport at any usable size. */
+  .heroButtons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .heroButtons > span,
+  .exhibitionActions > span {
+    display: flex;
+  }
+
+  .heroButtons button {
+    width: 100%;
+  }
+
+  .exhibitionActions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  /* link-gray carries 4px of its own side padding, which reads as a misaligned
+     indent once it sits under the outlined button rather than beside it. */
+  .exhibitionActions > span:last-child {
+    margin-left: -4px;
+  }
+
+  .tickerItem,
+  .tickerDot {
+    padding: 0 15px;
+    font-size: 15px;
+  }
+
+  /* Number and access badge share a line; title and blurb take their own. */
+  .partRow {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'num   access'
+      'title title'
+      'desc  desc';
+    row-gap: 6px;
+    padding: 22px 0;
+  }
+
+  /* Likewise: time and track first, then the session, then who and where. */
+  .sessionRow {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'time  badge'
+      'title title'
+      'who   who'
+      'stage stage';
+    align-items: center;
+    row-gap: 7px;
+    padding: 20px 0;
+  }
+
+  .sessionTime {
+    padding-top: 0;
+  }
+
+  .sessionStage {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .sessionFoot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .practicalGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .logoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .passCard {
+    padding: 28px 22px;
+  }
+
+  .footerGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footerBaseInner {
+    gap: 10px;
+  }
+}
+
+/*
+ * ≤380px — the hero's date/venue line. Date, rule and venue are one line by
+ * design; at this width the tracking is what pushes them over, so tighten that
+ * rather than let the pair wrap into four ragged lines around the rule. A
+ * 390px handset still has room for the full-size label, hence 380 and not 400.
+ */
+@media (max-width: 380px) {
+  .heroMeta {
+    gap: 10px;
+  }
+
+  .heroDate,
+  .heroVenue {
+    font-size: 10px;
+    letter-spacing: 0.13em;
+  }
+
+  .heroMetaRule {
+    width: 16px;
+  }
+}
+
+/* ── ≤400px — small phone ── */
+@media (max-width: 400px) {
+  .navLogo {
+    width: 108px;
+    height: 22px;
+  }
+
+  .navShrunk .navLogo {
+    height: 19px;
+  }
+
+  .footerGrid {
+    gap: 26px 20px;
+  }
+
+  .dialogueCta,
+  .closingCta {
+    width: 100%;
+    justify-content: center;
   }
 }

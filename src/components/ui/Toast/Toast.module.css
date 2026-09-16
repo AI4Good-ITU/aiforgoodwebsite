@@ -37,3 +37,17 @@
   line-height: 1.4;
   color: #fff;
 }
+
+@media (max-width: 560px) {
+  .toast {
+    left: 16px;
+    right: 16px;
+    bottom: 20px;
+    transform: translate(0, 16px);
+    border-radius: 14px;
+  }
+
+  .shown {
+    transform: translate(0, 0);
+  }
+}
