@@ -43,3 +43,15 @@
   color: var(--btn-fg);
   border-color: var(--btn-bg);
 }
+
+@media (max-width: 640px) {
+  .legend {
+    /* On its own line above the chips rather than squeezed beside them. */
+    flex: 1 0 100%;
+    margin: 0 0 2px;
+  }
+
+  .chip {
+    padding: 8px 13px;
+  }
+}

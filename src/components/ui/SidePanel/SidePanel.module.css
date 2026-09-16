@@ -112,3 +112,23 @@
     animation-duration: 0.001s;
   }
 }
+
+@media (max-width: 560px) {
+  .panel {
+    width: 100%;
+    max-width: none;
+    border-left: none;
+  }
+
+  .image {
+    height: 220px;
+  }
+
+  .body {
+    padding: 28px 22px 44px;
+  }
+
+  .title {
+    font-size: 27px;
+  }
+}

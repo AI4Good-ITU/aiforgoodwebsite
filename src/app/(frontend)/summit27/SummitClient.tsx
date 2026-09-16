@@ -62,6 +62,7 @@ export default function SummitClient() {
   const [track, setTrack] = useState<string>('All')
   const [speakerIndex, setSpeakerIndex] = useState<number | null>(null)
   const [early, setEarly] = useState(true)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   /*
    * SidePanel portals into this instead of document.body, so the panel stays
@@ -141,6 +142,23 @@ export default function SummitClient() {
               </Button>
             </span>
           </div>
+          <button
+            type="button"
+            className={styles.navToggle}
+            aria-label="Open menu"
+            aria-haspopup="dialog"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(true)}
+          >
+            <svg width="22" height="14" viewBox="0 0 22 14" aria-hidden="true" focusable="false">
+              <path
+                d="M0 1h22M0 7h22M0 13h22"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                fill="none"
+              />
+            </svg>
+          </button>
         </div>
         <div className={styles.navRule} />
         <div
@@ -231,11 +249,7 @@ export default function SummitClient() {
 
       {/* ── Six parts ── */}
       <section id="week" className={styles.section} style={{ background: 'var(--bg-2)' }}>
-        <div
-          className={`${styles.sectionPad} ${styles.reveal}`}
-          data-reveal="1"
-          style={{ maxWidth: 1360, margin: '0 auto' }}
-        >
+        <div className={`${styles.wide} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
           <div className={styles.sectionHead} style={{ marginBottom: 44 }}>
             <div>
               <Eyebrow>The week</Eyebrow>
@@ -261,11 +275,7 @@ export default function SummitClient() {
 
       {/* ── Programme ── */}
       <section id="programme" className={styles.section} style={{ background: 'var(--bg)' }}>
-        <div
-          className={`${styles.sectionPad} ${styles.reveal}`}
-          data-reveal="1"
-          style={{ maxWidth: 1360, margin: '0 auto' }}
-        >
+        <div className={`${styles.wide} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
           <div className={styles.sectionHead} style={{ marginBottom: 36 }}>
             <div>
               <Eyebrow>Programme</Eyebrow>
@@ -324,11 +334,7 @@ export default function SummitClient() {
 
       {/* ── Speakers ── */}
       <section id="speakers" className={styles.section} style={{ background: 'var(--bg-2)' }}>
-        <div
-          className={`${styles.sectionPad} ${styles.reveal}`}
-          data-reveal="1"
-          style={{ maxWidth: 1360, margin: '0 auto' }}
-        >
+        <div className={`${styles.wide} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
           <div className={styles.sectionHead} style={{ marginBottom: 14 }}>
             <div>
               <Eyebrow>Speakers</Eyebrow>
@@ -441,11 +447,7 @@ export default function SummitClient() {
 
       {/* ── Passes ── */}
       <section id="passes" className={styles.section} style={{ background: 'var(--bg-2)' }}>
-        <div
-          className={`${styles.sectionPad} ${styles.reveal}`}
-          data-reveal="1"
-          style={{ maxWidth: 1360, margin: '0 auto' }}
-        >
+        <div className={`${styles.wide} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
           <div className={styles.sectionHead} style={{ marginBottom: 14 }}>
             <div>
               <Eyebrow>Passes</Eyebrow>
@@ -539,11 +541,7 @@ export default function SummitClient() {
 
       {/* ── Global Dialogue ── */}
       <div className={styles.dialogue}>
-        <div
-          className={`${styles.dialogueInner} ${styles.reveal}`}
-          data-reveal="1"
-          style={{ maxWidth: 1360, margin: '0 auto' }}
-        >
+        <div className={`${styles.wide} ${styles.dialogueInner} ${styles.reveal}`} data-reveal="1">
           <div className={styles.dialogueDates}>
             <div className={styles.dialogueDay}>6–7</div>
             <div className={styles.dialogueMonth}>July</div>
@@ -565,11 +563,7 @@ export default function SummitClient() {
 
       {/* ── Geneva ── */}
       <section id="geneva" className={styles.section} style={{ background: 'var(--bg)' }}>
-        <div
-          className={styles.reveal}
-          data-reveal="1"
-          style={{ maxWidth: 1360, margin: '0 auto', padding: '88px 48px 40px' }}
-        >
+        <div className={`${styles.wide} ${styles.genevaTop} ${styles.reveal}`} data-reveal="1">
           <Eyebrow>Practical</Eyebrow>
           <div className={styles.sectionHead} style={{ margin: '16px 0 40px' }}>
             <h2 className={styles.h2} style={{ margin: 0 }}>
@@ -589,11 +583,7 @@ export default function SummitClient() {
             ))}
           </div>
         </div>
-        <div
-          className={styles.reveal}
-          data-reveal="1"
-          style={{ maxWidth: 1360, margin: '0 auto', padding: '40px 48px 96px' }}
-        >
+        <div className={`${styles.wide} ${styles.genevaBottom} ${styles.reveal}`} data-reveal="1">
           <div className={styles.venue}>
             <img
               className={styles.parallaxImg}
@@ -625,19 +615,8 @@ export default function SummitClient() {
 
       {/* ── Partners ── */}
       <section id="partners" className={styles.section} style={{ background: 'var(--bg-2)' }}>
-        <div
-          className={styles.reveal}
-          data-reveal="1"
-          style={{ maxWidth: 1360, margin: '0 auto', padding: '80px 48px' }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'baseline',
-              justifyContent: 'space-between',
-              marginBottom: 30,
-            }}
-          >
+        <div className={`${styles.wide} ${styles.partnersPad} ${styles.reveal}`} data-reveal="1">
+          <div className={styles.partnersHead}>
             <Eyebrow>Partners &amp; sponsors</Eyebrow>
             <a href="#partners" data-page="Sponsorship brochure" className={styles.moreLink}>
               Sponsorship brochure →
@@ -665,11 +644,7 @@ export default function SummitClient() {
 
       {/* ── Newsroom ── */}
       <section id="news" className={styles.section} style={{ background: 'var(--bg)' }}>
-        <div
-          className={`${styles.sectionPad} ${styles.reveal}`}
-          data-reveal="1"
-          style={{ maxWidth: 1360, margin: '0 auto' }}
-        >
+        <div className={`${styles.wide} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
           <div className={styles.sectionHead} style={{ marginBottom: 36 }}>
             <h2 className={styles.h2} style={{ margin: 0 }}>
               Newsroom
@@ -699,7 +674,7 @@ export default function SummitClient() {
       {/* ── Closing CTA ── */}
       <div className={styles.closing}>
         <div className={styles.closingWash} />
-        <div className={styles.closingInner} style={{ maxWidth: 1360, margin: '0 auto' }}>
+        <div className={`${styles.wide} ${styles.closingInner}`}>
           <div>
             <h2 className={styles.closingTitle}>Geneva, 7–10 July 2027.</h2>
             <p className={styles.closingText}>
@@ -714,7 +689,7 @@ export default function SummitClient() {
 
       {/* ── Footer ── */}
       <footer className={styles.footer}>
-        <div className={styles.footerGrid} style={{ maxWidth: 1360, margin: '0 auto' }}>
+        <div className={`${styles.wide} ${styles.footerGrid}`}>
           <div>
             <img className={styles.footerLogo} src="/img/logo-white.png" alt="AI for Good" />
             <p className={styles.footerAbout}>
@@ -768,7 +743,7 @@ export default function SummitClient() {
             </a>
           </div>
         </div>
-        <div className={styles.footerBase} style={{ maxWidth: 1360, margin: '0 auto' }}>
+        <div className={`${styles.wide} ${styles.footerBase}`}>
           <div className={styles.footerBaseInner}>
             <span className={styles.footerFine}>© 2026 International Telecommunication Union</span>
             <span className={styles.footerFine}>
@@ -777,6 +752,32 @@ export default function SummitClient() {
           </div>
         </div>
       </footer>
+
+      {/* ── Mobile menu ── */}
+      <SidePanel
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        title="Menu"
+        container={portalContainer}
+      >
+        <nav className={styles.menuLinks} aria-label="Summit sections">
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className={styles.menuLink}
+              onClick={() => setMenuOpen(false)}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+        <div className={`${styles.menuCta} ${styles.glowNav}`} data-page="Registration">
+          <Button size="lg" hierarchy="primary" fullWidth>
+            Register
+          </Button>
+        </div>
+      </SidePanel>
 
       {/* ── Speaker panel ── */}
       <SidePanel

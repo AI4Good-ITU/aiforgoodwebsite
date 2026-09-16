@@ -48,3 +48,31 @@
   text-transform: uppercase;
   opacity: 0.62;
 }
+
+/*
+ * On a phone the strip is wider than the viewport, so it scrolls sideways.
+ * The list's hairline goes with it — a rule only as wide as its content reads
+ * as a mistake — leaving the active trigger's own underline to mark selection.
+ */
+@media (max-width: 640px) {
+  .list {
+    border-bottom: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-bottom: 18px;
+  }
+
+  .list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .trigger {
+    flex: none;
+    margin-bottom: 0;
+    padding: 12px 14px 13px;
+  }
+
+  .label {
+    font-size: 15px;
+  }
+}
