@@ -23,6 +23,7 @@ import {
   SOCIALS,
   SPONSOR_TIERS,
   TESTIMONIALS,
+  THEMES,
   TICKER_ITEMS,
   UN_PARTNERS,
 } from './data'
@@ -478,6 +479,24 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
             >
               Read all articles
             </a>
+          </div>
+        </section>
+
+        {/* ── Topics ── */}
+        <section id="topics" className={styles.section} style={{ background: 'var(--bg-2)' }}>
+          <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
+            <Eyebrow>Programme</Eyebrow>
+            <h2 className={styles.h2}>Discover the 2026 Summit themes</h2>
+            <div className={styles.themeGrid}>
+              {THEMES.map((t) => (
+                <div key={t.title} className={styles.themeTile}>
+                  <div className={styles.themeImgWrap}>
+                    <img className={styles.themeImg} src={t.img} alt="" loading="lazy" />
+                    <div className={styles.themeTitle}>{t.title}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

@@ -386,6 +386,26 @@ export const NEWS: Article[] = [
   },
 ]
 
+export type Theme = { title: string; img: string }
+
+/** The Summit's programme themes, as shown on aiforgood.itu.int/summit27. */
+export const THEMES: Theme[] = [
+  { title: 'AI & the future of work', img: '/img/themes/ai-future-of-work.jpg' },
+  { title: 'AI creativity & culture', img: '/img/themes/ai-creativity-culture.jpg' },
+  { title: 'AI for food & agriculture', img: '/img/themes/ai-food-agriculture.png' },
+  { title: 'AI for health', img: '/img/themes/ai-health.png' },
+  { title: 'AI for planet', img: '/img/themes/ai-planet.jpg' },
+  { title: 'AI policy', img: '/img/themes/ai-policy.jpg' },
+  { title: 'AI skills & education', img: '/img/themes/ai-skills-education.png' },
+  { title: 'AI Standards Exchange', img: '/img/themes/ai-standards-exchange.png' },
+  { title: 'Frontier technologies', img: '/img/themes/frontier-technologies.jpg' },
+  { title: 'AI & mobility', img: '/img/themes/ai-mobility.jpg' },
+  { title: 'Impact & innovation', img: '/img/themes/impact-innovation.png' },
+  { title: 'Quantum for Good', img: '/img/themes/quantum-for-good.png' },
+  { title: 'Robotics for Good', img: '/img/themes/robotics-for-good.png' },
+  { title: 'AI infrastructure', img: '/img/themes/ai-infrastructure.png' },
+]
+
 export type Testimonial = { quote: string; name: string; role: string; img: string }
 
 /** From the closing carousel on aiforgood.itu.int/summit27. */

@@ -121,6 +121,7 @@ test.describe('Summit 2027 — responsive', () => {
   test('the multi-column grids step down with the viewport', async ({ page }) => {
     await open(page, 1440)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(4)
+    expect(await columnCount(page, mod('themeGrid'))).toBe(5)
     expect(await columnCount(page, mod('logoGrid'))).toBe(5)
     expect(await columnCount(page, mod('newsGrid'))).toBe(3)
     expect(await columnCount(page, mod('quoteGrid'))).toBe(2)
@@ -134,6 +135,7 @@ test.describe('Summit 2027 — responsive', () => {
     await open(page, 768)
     // Speakers hold three across a tablet; they drop to two at 720.
     expect(await columnCount(page, mod('speakerGrid'))).toBe(3)
+    expect(await columnCount(page, mod('themeGrid'))).toBe(3)
     expect(await columnCount(page, mod('logoGrid'))).toBe(3)
     expect(await columnCount(page, mod('newsGrid'))).toBe(2)
     expect(await columnCount(page, mod('quoteGrid'))).toBe(1)
@@ -141,6 +143,7 @@ test.describe('Summit 2027 — responsive', () => {
 
     await open(page, 390)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(2)
+    expect(await columnCount(page, mod('themeGrid'))).toBe(2)
     expect(await columnCount(page, mod('logoGrid'))).toBe(2)
     expect(await columnCount(page, mod('newsGrid'))).toBe(1)
     expect(await columnCount(page, mod('footerGrid'))).toBe(2)
