@@ -9,8 +9,10 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+# Install dependencies based on the preferred package manager. .npmrc carries
+# legacy-peer-deps, which the lockfile was resolved with; without it `npm ci`
+# rejects the lock as out of sync.
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
   elif [ -f package-lock.json ]; then npm ci; \
@@ -48,8 +50,8 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# This project has no ./public folder; re-add the following line if you add one.
-# COPY --from=builder /app/public ./public
+# The standalone output does not include ./public; the site's images live there.
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # Set the correct permission for prerender cache
 RUN mkdir .next

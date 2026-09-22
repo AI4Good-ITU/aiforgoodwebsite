@@ -1,0 +1,59 @@
+# Production stack for a single server: Postgres, a one-shot migration run, and
+# the app built from the Dockerfile (standalone Next.js output).
+#
+#   cp .env.example .env            # set PAYLOAD_SECRET and POSTGRES_PASSWORD
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# The app listens on 127.0.0.1:3000 only; put a reverse proxy (Caddy, nginx)
+# in front of it for TLS and the public hostname.
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: payload
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: aiforgoodwebsite
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U payload -d aiforgoodwebsite']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Applies the committed migrations in src/migrations, then exits. Uses the
+  # Dockerfile's builder stage because the standalone runtime image carries
+  # only what the server needs, not the Payload CLI.
+  migrate:
+    build:
+      context: .
+      target: builder
+    command: npm run migrate
+    environment:
+      DATABASE_URL: postgres://payload:${POSTGRES_PASSWORD}@postgres:5432/aiforgoodwebsite
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?set PAYLOAD_SECRET in .env}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:3000:3000'
+    environment:
+      DATABASE_URL: postgres://payload:${POSTGRES_PASSWORD}@postgres:5432/aiforgoodwebsite
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?set PAYLOAD_SECRET in .env}
+    volumes:
+      # Payload uploads go to ./media on disk; keep them across deploys.
+      - media:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:
+  media:

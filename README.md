@@ -53,6 +53,30 @@ npm run test:e2e         # playwright
 
 Data lives in the `pgdata` volume. `docker-compose down -v` wipes it.
 
+## Deploy (single server)
+
+[docker-compose.prod.yml](docker-compose.prod.yml) runs the production stack on one host: Postgres, a one-shot migration job, and the app built from the [Dockerfile](Dockerfile).
+
+```sh
+git clone git@github.com:AI4Good-ITU/aiforgoodwebsite.git && cd aiforgoodwebsite
+cp .env.example .env
+# In .env set:
+#   PAYLOAD_SECRET=$(openssl rand -hex 32)
+#   POSTGRES_PASSWORD=<a long random password>
+# DATABASE_URL is composed from POSTGRES_PASSWORD by the compose file; leave it as is.
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+The app listens on `127.0.0.1:3000` only. Put a reverse proxy in front for TLS and the public hostname — with [Caddy](https://caddyserver.com) that is a two-line `Caddyfile`:
+
+```
+summit.example.org {
+    reverse_proxy 127.0.0.1:3000
+}
+```
+
+To ship an update: `git pull && docker compose -f docker-compose.prod.yml up -d --build`. Migrations run before the app starts; Postgres data is in the `pgdata` volume and uploads in `media`.
+
 ## Gotchas
 
 - Hydration warning about `cz-shortcut-listen` on `<body>`? That's the ColorZilla extension, not the app. Disable it for localhost. The frontend layout already sets `suppressHydrationWarning`; the admin `<body>` is rendered by Payload and takes no props, so it can't be suppressed.
