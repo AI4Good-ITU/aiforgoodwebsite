@@ -110,13 +110,14 @@
 }
 
 /*
- * The explicit overrides. Setting color-scheme is all it takes: every
- * light-dark() above re-resolves against it.
+ * The explicit overrides, keyed off <html data-theme> so a saved choice can be
+ * restored from <head> before the page paints. Setting color-scheme is all it
+ * takes: every light-dark() above re-resolves against it.
  */
-.summit[data-theme='light'] {
+:global(html[data-theme='light']) .summit {
   color-scheme: light;
 }
 
-.summit[data-theme='dark'] {
+:global(html[data-theme='dark']) .summit {
   color-scheme: dark;
 }

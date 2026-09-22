@@ -143,7 +143,7 @@ test.describe('Summit 2027', () => {
 
   /*
    * The theme is one set of light-dark() tokens. It follows the OS by default,
-   * and `data-theme` on the theme root overrides it either way.
+   * and `data-theme` on <html> overrides it either way.
    */
   test('follows the colour scheme and honours a data-theme override', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
@@ -164,8 +164,7 @@ test.describe('Summit 2027', () => {
 
     // Forcing light on a dark OS.
     await page.evaluate(() => {
-      const themed = document.querySelector('[class*="__summit"]') as HTMLElement
-      themed.dataset.theme = 'light'
+      document.documentElement.dataset.theme = 'light'
     })
     await expect(root).toHaveCSS('background-color', 'rgb(255, 255, 255)')
 

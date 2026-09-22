@@ -6,7 +6,7 @@
  */
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
 import styles from './summit.module.css'
 import { Button, Eyebrow, SidePanel, Toast } from '@/components/ui'
@@ -79,6 +79,42 @@ function readStoredTheme(): Theme | null {
   }
 }
 
+/*
+ * The saved choice as an external store. useSyncExternalStore hands the
+ * server snapshot (null: follow the OS) to the hydrating render and only then
+ * swaps in the stored value, so the markup matches without a flash — the
+ * layout's <head> script has already put the flag on <html>.
+ */
+const themeListeners = new Set<() => void>()
+const themeStore = {
+  subscribe(cb: () => void) {
+    themeListeners.add(cb)
+    window.addEventListener('storage', cb)
+    return () => {
+      themeListeners.delete(cb)
+      window.removeEventListener('storage', cb)
+    }
+  },
+  get: readStoredTheme,
+  set(next: Theme) {
+    try {
+      localStorage.setItem(THEME_KEY, next)
+    } catch {
+      // Private mode or storage disabled: the choice still applies for this visit.
+    }
+    document.documentElement.dataset.theme = next
+    themeListeners.forEach((cb) => cb())
+  },
+}
+
+const DARK_QUERY = '(prefers-color-scheme: dark)'
+const subscribeSystem = (cb: () => void) => {
+  const mq = window.matchMedia(DARK_QUERY)
+  mq.addEventListener('change', cb)
+  return () => mq.removeEventListener('change', cb)
+}
+const getSystem = (): Theme => (window.matchMedia(DARK_QUERY).matches ? 'dark' : 'light')
+
 function SunIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -109,15 +145,9 @@ function MoonIcon() {
 
 export default function SummitClient({ themeClass }: { themeClass: string }) {
   const [menuOpen, setMenuOpen] = useState(false)
-  /*
-   * null means "follow the OS". The initial value is read synchronously so
-   * the first client render agrees with what the inline script in page.tsx
-   * already put on the DOM.
-   */
-  const [theme, setTheme] = useState<Theme | null>(() =>
-    typeof window === 'undefined' ? null : readStoredTheme(),
-  )
-  const [system, setSystem] = useState<Theme>('light')
+  // null means "follow the OS"; `system` is what the OS currently says.
+  const theme = useSyncExternalStore(themeStore.subscribe, themeStore.get, () => null)
+  const system = useSyncExternalStore(subscribeSystem, getSystem, () => 'light' as Theme)
   const effectiveTheme = theme ?? system
   const [toast, setToast] = useState<string | null>(null)
   /*
@@ -136,24 +166,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
 
   useEffect(() => setPortalContainer(rootRef.current), [])
 
-  // Track the OS setting so the toggle's icon reflects what is actually shown.
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const sync = () => setSystem(mq.matches ? 'dark' : 'light')
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
-
-  const toggleTheme = () => {
-    const next: Theme = effectiveTheme === 'dark' ? 'light' : 'dark'
-    setTheme(next)
-    try {
-      localStorage.setItem(THEME_KEY, next)
-    } catch {
-      // Private mode or storage disabled: the choice still applies for this visit.
-    }
-  }
+  const toggleTheme = () => themeStore.set(effectiveTheme === 'dark' ? 'light' : 'dark')
 
   useEffect(() => () => void (toastTimer.current && clearTimeout(toastTimer.current)), [])
 
@@ -171,12 +184,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
   }, [])
 
   return (
-    <div
-      id="summit"
-      className={themeClass}
-      data-theme={theme ?? undefined}
-      suppressHydrationWarning
-    >
+    <div className={themeClass}>
       <div className={styles.root} ref={rootRef} onClick={onRootClick}>
         {/* ── Nav ── */}
         <div className={`${styles.nav} ${shrunk ? styles.navShrunk : ''}`}>
