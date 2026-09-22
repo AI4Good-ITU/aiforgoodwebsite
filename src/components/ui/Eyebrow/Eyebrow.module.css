@@ -1,24 +1,10 @@
-/* Small uppercase section label, preceded by a glowing spectrum dot. */
+/* Small uppercase section label. */
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 13px;
-  font-size: 12px;
+  display: block;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-3);
-}
-
-.eyebrow::before {
-  content: '';
-  flex: none;
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--violet), var(--cyan));
-  box-shadow:
-    0 0 10px rgba(34, 211, 238, 0.7),
-    0 0 18px rgba(123, 92, 250, 0.3);
+  color: var(--text-2);
 }

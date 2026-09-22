@@ -1,6 +1,10 @@
 /*
- * Reads --btn-bg / --btn-bg-h / --btn-fg / --text / --text-2 / --line-2 from
- * an ancestor theme class (src/styles/theme.module.css).
+ * Reads --btn-* and --btn-2-* from an ancestor theme class
+ * (src/styles/theme.module.css).
+ *
+ * Square corners throughout: the design draws every button as a rectangle,
+ * and the only rounded controls on the page are the badges and the day
+ * stepper, which are their own components.
  */
 
 .btn {
@@ -14,31 +18,31 @@
   cursor: pointer;
   font-family: inherit;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
   white-space: nowrap;
   text-align: center;
   transition:
-    background 0.12s ease,
-    box-shadow 0.35s ease,
-    color 0.12s ease;
+    background 0.14s ease,
+    color 0.14s ease,
+    border-color 0.14s ease;
 }
 
 /* ── Sizes ── */
 
 .md {
   height: 40px;
-  padding: 0 18px;
-  font-size: 14px;
+  padding: 0 15px;
+  font-size: 15px;
 }
 
 .lg {
   height: 48px;
-  padding: 0 22px;
+  padding: 0 24px;
   font-size: 15px;
 }
 
 .xl {
-  height: 56px;
+  height: 48px;
   padding: 0 28px;
   font-size: 16px;
 }
@@ -50,37 +54,54 @@
 /* ── Hierarchies ── */
 
 /*
- * Solid, on the dark base. The glow is supplied by an ancestor setting
- * --btn-glow on hover, so each call site can tint its own shadow without
- * this component knowing about it.
+ * Each rule is `.btn.<hierarchy>` rather than `.<hierarchy>` alone: when the
+ * button renders as a link, the UA's `a:-webkit-any-link { color }` scores
+ * (0,1,1) and would otherwise paint the label blue.
  */
-.primary {
+
+.btn.primary {
   background: var(--btn-bg);
   color: var(--btn-fg);
-  box-shadow: var(--btn-glow, none);
 }
 
-.primary:hover {
+.btn.primary:hover {
   background: var(--btn-bg-h);
 }
 
-/* Hairline outline, drawn with an inset shadow so it costs no layout. */
-.secondaryGray {
+/*
+ * The outlined pair to `primary`. A real border rather than an inset shadow:
+ * on light this button is white-on-white and the hairline is the only thing
+ * separating it from the page.
+ */
+.btn.secondaryGray {
+  background: var(--btn-2-bg);
+  color: var(--btn-2-fg);
+  border: 1px solid var(--btn-2-line);
+}
+
+.btn.secondaryGray:hover {
+  background: var(--btn-2-bg-h);
+  border-color: var(--text-3);
+}
+
+.btn.linkGray {
   background: transparent;
   color: var(--text);
-  box-shadow: inset 0 0 0 1px var(--line-2);
-}
-
-.secondaryGray:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.linkGray {
-  background: transparent;
-  color: var(--text-2);
   padding: 0 4px;
 }
 
-.linkGray:hover {
-  color: var(--text);
+.btn.linkGray:hover {
+  color: var(--text-2);
+}
+
+/* The band buttons sit on the near-black Global Dialogue strip, which keeps
+   its colours in both modes — hence its own hierarchy rather than a token
+   swap on `primary`. */
+.btn.onBand {
+  background: #ffffff;
+  color: #0a0a0a;
+}
+
+.btn.onBand:hover {
+  background: #e5e7eb;
 }

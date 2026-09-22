@@ -7,9 +7,9 @@ const URL = 'http://localhost:3000/summit27'
  * so the local name is a stable suffix to match on.
  *
  * Anchor the end of the token, or a plain `*=` match would also catch every
- * class that merely starts with the name — `highlight` would pull in
- * `highlightScrim`, `highlightDot` and the rest. A token ends either at the
- * end of the attribute or at the space before the next class.
+ * class that merely starts with the name — `quote` would pull in `quoteText`,
+ * `quoteBy` and the rest. A token ends either at the end of the attribute or
+ * at the space before the next class.
  */
 const mod = (name: string) => `[class$="__${name}"], [class*="__${name} "]`
 
@@ -23,7 +23,13 @@ function watchForErrors(page: Page) {
   return errors
 }
 
-test.describe('Summit 2027 (Blend)', () => {
+/** True when a computed colour reads as the browser's default link blue. */
+function looksBlue(color: string) {
+  const [r, g, b] = (color.match(/\d+/g) ?? []).map(Number)
+  return b > 150 && b > r + 60 && b > g + 40
+}
+
+test.describe('Summit 2027', () => {
   test('renders every section of the design', async ({ page }) => {
     const errors = watchForErrors(page)
     await page.setViewportSize({ width: 1440, height: 900 })
@@ -37,261 +43,169 @@ test.describe('Summit 2027 (Blend)', () => {
     await expect(page.locator('h1')).toContainText('2027')
     await expect(page.getByText('7–10 July 2027').first()).toBeVisible()
     await expect(page.getByText('Palexpo, Geneva').first()).toBeVisible()
-    await expect(page.locator(mod('heroImg'))).toBeVisible()
+    await expect(page.locator(mod('heroMark')).locator('img')).toBeVisible()
 
     // Section headings, in document order
     for (const heading of [
       'Six parts, one hall.',
       'Who takes the stage',
       'Two hundred stands you can actually touch.',
-      'Choose your pass',
-      'Getting to Geneva',
+      'The United Nations’ leading platform on Artificial Intelligence.',
       'Newsroom',
+      'What they said on stage',
     ]) {
       await expect(page.getByRole('heading', { name: heading })).toBeAttached()
     }
-    await expect(page.getByRole('heading', { name: /Four days, three stages/ })).toBeAttached()
 
-    // Anchor targets the nav links point at
-    for (const id of [
-      'top',
-      'week',
-      'programme',
-      'speakers',
-      'exhibition',
-      'passes',
-      'geneva',
-      'partners',
-      'news',
-    ]) {
+    // Anchor targets the nav and footer links point at
+    for (const id of ['top', 'week', 'speakers', 'exhibition', 'about', 'sponsors', 'news', 'voices']) {
       await expect(page.locator(`#${id}`)).toBeAttached()
     }
 
     // Collection counts
     await expect(page.locator(mod('partRow'))).toHaveCount(6)
-    await expect(page.locator(mod('speaker'))).toHaveCount(8)
-    await expect(page.locator(mod('passCard'))).toHaveCount(3)
-    await expect(page.locator(mod('logoTile'))).toHaveCount(13)
+    await expect(page.locator(mod('speaker'))).toHaveCount(12)
+    await expect(page.locator(mod('tier'))).toHaveCount(6)
+    await expect(page.locator(mod('logoTile'))).toHaveCount(29)
     await expect(page.locator(mod('newsCard'))).toHaveCount(3)
-    await expect(page.locator(mod('highlight'))).toHaveCount(3)
-    await expect(page.locator(mod('practical'))).toHaveCount(4)
+    await expect(page.locator(mod('quote'))).toHaveCount(4)
 
-    // Closing CTA + footer
-    await expect(page.getByRole('heading', { name: 'Geneva, 7–10 July 2027.' })).toBeAttached()
-    await expect(page.getByText(/© 2026 International Telecommunication Union/)).toBeAttached()
+    // Footer
+    await expect(page.getByText(/© 2026 AI for Good/)).toBeAttached()
 
     expect(errors).toEqual([])
   })
 
-  test('stats count up to their final values', async ({ page }) => {
+  test('speakers, articles and sponsors link out to aiforgood.itu.int', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(URL)
-    const stats = page.locator(mod('statNum'))
-    await expect(stats.nth(0)).toHaveText('1,000+', { timeout: 5000 })
-    await expect(stats.nth(1)).toHaveText('200+')
-    await expect(stats.nth(2)).toHaveText('50+')
-  })
 
-  test('programme filters by day and by track', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
-    await page.goto(URL)
-    await page.locator('#programme').scrollIntoViewIfNeeded()
+    const external = async (locator: ReturnType<Page['locator']>, pattern: RegExp) => {
+      await expect(locator).toHaveAttribute('href', pattern)
+      await expect(locator).toHaveAttribute('target', '_blank')
+      await expect(locator).toHaveAttribute('rel', /noopener/)
+    }
 
-    const rows = page.locator(mod('sessionRow'))
-    const count = page.locator(mod('sessionCount'))
+    // Every speaker card is a link to that speaker's page.
+    const speakers = page.locator(mod('speaker'))
+    await external(speakers.first(), /aiforgood\.itu\.int\/speaker\/doreen-bogdan-martin\//)
+    await external(speakers.last(), /aiforgood\.itu\.int\/speaker\/avye-couloute\//)
+    await expect(speakers.first()).toContainText('Secretary-General, ITU')
 
-    // Day 1 (default): 6 sessions
-    await expect(rows).toHaveCount(6)
-    await expect(count).toHaveText('6 of 6 sessions on Wed 7 July')
-    await expect(page.getByText('Opening ceremony: the state of AI in 2027')).toBeVisible()
+    // The three posts, and the blog behind them.
+    const posts = page.locator(mod('newsCard'))
+    await external(posts.nth(0), /from-bit-flow-to-token-flow/)
+    await external(posts.nth(1), /from-plan-to-plate/)
+    await external(posts.nth(2), /ai-readiness-hackathon/)
+    await expect(posts.nth(0)).toContainText('21 September 2026')
+    await external(page.getByRole('link', { name: /Read all articles/ }).first(), /ai-for-good-blog/)
 
-    // Switching day swaps the session list
-    await page.getByRole('tab', { name: /Sat 10 July/ }).click()
-    await expect(rows).toHaveCount(5)
-    await expect(count).toHaveText('5 of 5 sessions on Sat 10 July')
-    await expect(page.getByText('Safety research in the open')).toBeVisible()
-    await expect(page.getByText('Opening ceremony: the state of AI in 2027')).toHaveCount(0)
+    // Buttons that are really links.
+    await external(
+      page.getByRole('link', { name: 'Sponsorship opportunities' }),
+      /aiforgood\.itu\.int\/engage\/sponsor\//,
+    )
+    await external(
+      page.getByRole('link', { name: 'Discover the 2026 exhibitors' }),
+      /summit26\/exhibitors\//,
+    )
+    await external(page.getByRole('link', { name: 'About us' }), /about-ai-for-good\//)
+    await external(page.getByRole('link', { name: /Become a sponsor/ }), /aiforgood\.itu\.int\/sponsor\//)
 
-    // Track chip narrows within the day, and the count reflects both
-    await page.getByRole('radio', { name: 'Keynote', exact: true }).click()
-    await expect(rows).toHaveCount(2)
-    await expect(count).toHaveText('2 of 5 sessions on Sat 10 July · Keynote')
-
-    // Back to All restores the day's full list
-    await page.getByRole('radio', { name: 'All', exact: true }).click()
-    await expect(rows).toHaveCount(5)
-  })
-
-  test('speaker panel opens with bio and sessions, and closes', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
-    await page.goto(URL)
-    await page.locator('#speakers').scrollIntoViewIfNeeded()
-
-    const panel = page.getByRole('dialog')
-    await expect(panel).toHaveCount(0)
-
-    await page.locator(mod('speaker')).filter({ hasText: 'Geoffrey Hinton' }).click()
-    await expect(panel).toBeVisible()
-    await expect(panel.getByRole('heading', { name: 'Geoffrey Hinton' })).toBeVisible()
-    await expect(panel).toContainText('Turing Award and Nobel laureate')
-    await expect(panel).toContainText('open safety research')
-    await expect(panel).toContainText('Sat 10 July, 11:00')
-    await expect(panel).toContainText('Safety research in the open')
-
-    // Escape closes it
-    await page.keyboard.press('Escape')
-    await expect(panel).toHaveCount(0)
-
-    // So does the close button
-    await page.locator(mod('speaker')).filter({ hasText: 'Fei-Fei Li' }).click()
-    await expect(panel).toBeVisible()
-    await panel.getByRole('button', { name: 'Close' }).click()
-    await expect(panel).toHaveCount(0)
+    // Each sponsor tile links to the sponsor.
+    const tiles = page.locator(mod('logoTile'))
+    await external(tiles.first(), /admin\.ch/)
+    await expect(tiles.first()).toHaveAttribute('aria-label', 'Swiss Confederation')
   })
 
   /*
-   * The three tests below cover what moving onto Radix was for. Each asserts
-   * behaviour the hand-rolled versions did not have.
+   * A button that renders as an <a> is still subject to the UA's link colour,
+   * and once was: the labels came out blue. Assert against the whole page
+   * rather than one control, so the regression cannot come back elsewhere.
    */
-
-  test('day tabs follow the ARIA tabs keyboard pattern', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
-    await page.goto(URL)
-    await page.locator('#programme').scrollIntoViewIfNeeded()
-
-    const tabs = page.getByRole('tab')
-    await expect(tabs).toHaveCount(4)
-
-    // The strip is a single tab stop; focus lands on the selected tab.
-    await tabs.first().focus()
-    await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
-
-    // Arrow keys move selection along the strip.
-    await page.keyboard.press('ArrowRight')
-    await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true')
-    await expect(page.locator(mod('sessionCount'))).toContainText('Thu 8 July')
-
-    await page.keyboard.press('ArrowRight')
-    await expect(tabs.nth(2)).toHaveAttribute('aria-selected', 'true')
-
-    await page.keyboard.press('ArrowLeft')
-    await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true')
-
-    // End/Home jump to the ends.
-    await page.keyboard.press('End')
-    await expect(tabs.nth(3)).toHaveAttribute('aria-selected', 'true')
-    await page.keyboard.press('Home')
-    await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true')
-
-    // Each tab is wired to a panel.
-    const controls = await tabs.nth(0).getAttribute('aria-controls')
-    expect(controls).toBeTruthy()
-    await expect(page.locator(`#${controls}`)).toHaveAttribute('role', 'tabpanel')
-  })
-
-  test('filters expose single-select semantics', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
-    await page.goto(URL)
-    await page.locator('#programme').scrollIntoViewIfNeeded()
-
-    // A one-of-many filter is a radiogroup, not a row of toggle buttons.
-    const group = page.getByRole('radiogroup', { name: 'Track' })
-    await expect(group).toBeVisible()
-    await expect(group.getByRole('radio')).toHaveCount(7)
-    await expect(page.getByRole('radio', { name: 'All', exact: true })).toHaveAttribute(
-      'aria-checked',
-      'true',
-    )
-
-    await page.getByRole('radio', { name: 'Health', exact: true }).click()
-    await expect(page.getByRole('radio', { name: 'Health', exact: true })).toHaveAttribute(
-      'aria-checked',
-      'true',
-    )
-    await expect(page.getByRole('radio', { name: 'All', exact: true })).toHaveAttribute(
-      'aria-checked',
-      'false',
-    )
-
-    // Re-pressing the active option must not clear the selection.
-    await page.getByRole('radio', { name: 'Health', exact: true }).click()
-    await expect(page.getByRole('radio', { name: 'Health', exact: true })).toHaveAttribute(
-      'aria-checked',
-      'true',
-    )
-    await expect(page.locator(mod('sessionCount'))).toContainText('· Health')
-  })
-
-  test('speaker panel traps focus, restores it, and locks scroll', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
-    await page.goto(URL)
-    await page.locator('#speakers').scrollIntoViewIfNeeded()
-
-    const trigger = page.locator(mod('speaker')).filter({ hasText: 'Timnit Gebru' })
-    await trigger.click()
-
-    const panel = page.getByRole('dialog')
-    await expect(panel).toBeVisible()
-
-    // Body scroll is locked while the panel is open.
-    expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toBe('hidden')
-
-    // Tab cycles within the panel and never escapes to the page behind it.
-    for (let i = 0; i < 8; i++) {
-      await page.keyboard.press('Tab')
-      const inside = await page.evaluate(() => {
-        const dialog = document.querySelector('[role="dialog"]')
-        return !!dialog && !!document.activeElement && dialog.contains(document.activeElement)
-      })
-      expect(inside, `focus escaped the panel after ${i + 1} Tab press(es)`).toBe(true)
+  test('no link or button falls back to the browser link blue', async ({ page }) => {
+    for (const scheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme: scheme })
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await page.goto(URL)
+      const colours = await page
+        .locator('a, button')
+        .evaluateAll((els) =>
+          els.map((el) => ({
+            text: el.textContent?.trim().slice(0, 40) ?? '',
+            color: getComputedStyle(el).color,
+          })),
+        )
+      const blue = colours.filter((c) => looksBlue(c.color))
+      expect(blue, `${scheme}: controls painted link-blue`).toEqual([])
     }
-
-    // Closing returns focus to the card that opened it.
-    await page.keyboard.press('Escape')
-    await expect(panel).toHaveCount(0)
-    const restored = await page.evaluate(() => {
-      const el = document.activeElement as HTMLElement | null
-      return el?.textContent?.includes('Timnit Gebru') ?? false
-    })
-    expect(restored, 'focus was not restored to the triggering card').toBe(true)
-
-    // And scroll is released.
-    expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden')
   })
 
-  test('pass pricing toggles between early access and standard', async ({ page }) => {
+  /*
+   * The theme is one set of light-dark() tokens. It follows the OS by default,
+   * and `data-theme` on the theme root overrides it either way.
+   */
+  test('follows the colour scheme and honours a data-theme override', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    const root = page.locator(mod('root'))
+    const sponsor = page.getByRole('link', { name: 'Sponsorship opportunities' })
+
+    await page.emulateMedia({ colorScheme: 'light' })
+    await page.goto(URL)
+    await expect(root).toHaveCSS('background-color', 'rgb(255, 255, 255)')
+    await expect(root).toHaveCSS('color', 'rgb(15, 23, 42)')
+    // secondary-gray on light: white face, slate hairline.
+    await expect(sponsor).toHaveCSS('background-color', 'rgb(255, 255, 255)')
+    await expect(sponsor).toHaveCSS('border-color', 'rgb(203, 213, 225)')
+
+    await page.emulateMedia({ colorScheme: 'dark' })
+    await expect(root).toHaveCSS('background-color', 'rgb(2, 6, 23)')
+    await expect(root).toHaveCSS('color', 'rgb(248, 250, 252)')
+
+    // Forcing light on a dark OS.
+    await page.evaluate(() => {
+      const themed = document.querySelector('[class*="__summit"]') as HTMLElement
+      themed.dataset.theme = 'light'
+    })
+    await expect(root).toHaveCSS('background-color', 'rgb(255, 255, 255)')
+
+    // The dark bands keep their colours in both modes.
+    const ticker = page.locator(mod('ticker')).first()
+    await expect(ticker).toHaveCSS('background-color', 'rgb(2, 6, 23)')
+    await expect(page.locator('footer')).toHaveCSS('background-color', 'rgb(10, 10, 10)')
+  })
+
+  test('shared Button resolves its theme tokens', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' })
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(URL)
-    await page.locator('#passes').scrollIntoViewIfNeeded()
 
-    const prices = page.locator(mod('passPrice'))
-    const note = page.locator(mod('passNote')).first()
+    // primary: brand black with white ink, square corners, the xl height.
+    const primary = page.getByRole('button', { name: 'Get first access to passes' })
+    await expect(primary).toHaveCSS('background-color', 'rgb(26, 26, 26)')
+    await expect(primary).toHaveCSS('color', 'rgb(255, 255, 255)')
+    await expect(primary).toHaveCSS('border-radius', '0px')
+    await expect(primary).toHaveCSS('height', '48px')
 
-    // Early access is the default, and shows the struck-through standard price
-    await expect(prices).toHaveText(['CHF 50', 'CHF 890', 'CHF 4,900'])
-    await expect(note).toHaveText('Early access rate, until 31 March 2027')
-    await expect(page.locator(mod('passWas'))).toHaveText(['CHF 70', 'CHF 1,190', 'CHF 5,600'])
+    // The same hierarchy rendered as a link carries the same colours.
+    const asLink = page.getByRole('link', { name: 'Discover the 2026 exhibitors' })
+    await expect(asLink).toHaveCSS('background-color', 'rgb(26, 26, 26)')
+    await expect(asLink).toHaveCSS('color', 'rgb(255, 255, 255)')
 
-    await page.getByRole('radio', { name: 'Standard' }).click()
-    await expect(prices).toHaveText(['CHF 70', 'CHF 1,190', 'CHF 5,600'])
-    await expect(note).toHaveText('Standard rate')
-    await expect(page.locator(mod('passWas'))).toHaveCount(0)
-
-    await page.getByRole('radio', { name: 'Early access' }).click()
-    await expect(prices).toHaveText(['CHF 50', 'CHF 890', 'CHF 4,900'])
-
-    // Gold is the highlighted tier
-    await expect(page.getByText('Most popular')).toBeVisible()
+    // on-band is fixed white-on-black regardless of theme.
+    await page.emulateMedia({ colorScheme: 'dark' })
+    const about = page.getByRole('link', { name: 'About us' })
+    await expect(about).toHaveCSS('background-color', 'rgb(255, 255, 255)')
+    await expect(about).toHaveCSS('color', 'rgb(10, 10, 10)')
   })
 
-  test('nav docks on scroll and the progress bar advances', async ({ page }) => {
+  test('nav gains a surface on scroll and the progress bar advances', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(URL)
 
     const nav = page.locator(mod('nav')).first()
     const progress = page.locator(mod('navProgress'))
 
-    // At rest: floating, inset from the edges, progress bar fully clipped
     await expect(nav).not.toHaveClass(/navShrunk/)
     expect(await progress.evaluate((el) => getComputedStyle(el).clipPath)).toContain('100%')
 
@@ -312,7 +226,6 @@ test.describe('Summit 2027 (Blend)', () => {
       )
       .toBe(false)
 
-    // Scrolling back up undocks it
     await page.mouse.wheel(0, -1200)
     await expect(nav).not.toHaveClass(/navShrunk/)
   })
@@ -323,7 +236,7 @@ test.describe('Summit 2027 (Blend)', () => {
 
     const reveals = page.locator(mod('reveal'))
     const total = await reveals.count()
-    expect(total).toBeGreaterThan(5)
+    expect(total).toBeGreaterThan(4)
 
     /*
      * Keep advancing the page from inside the poll. The reveals fire from an
@@ -343,6 +256,17 @@ test.describe('Summit 2027 (Blend)', () => {
       .toBe(0)
   })
 
+  test('the marquee stops entirely under reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(URL)
+    const track = page.locator(mod('tickerTrack'))
+    await expect(track).toHaveCSS('animation-name', 'none')
+    // Parked at its start, not raced to the end.
+    const x = await track.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41)
+    expect(x).toBe(0)
+  })
+
   test('unbuilt destinations report themselves instead of navigating', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(URL)
@@ -350,88 +274,25 @@ test.describe('Summit 2027 (Blend)', () => {
     const toast = page.locator(mod('toast'))
     await expect(toast).not.toHaveClass(/shown/)
 
-    await page.getByRole('button', { name: 'Register' }).click()
+    await page.getByRole('button', { name: 'Get first access to passes' }).click()
     await expect(toast).toHaveClass(/shown/)
-    await expect(toast).toContainText('Registration — not built in this prototype')
+    await expect(toast).toContainText('Pass waitlist — not built in this prototype')
 
-    // Still on the same page
     expect(page.url()).toBe(URL)
   })
 
-  /*
-   * The link classes are all single-class rules, so any reset that outranks
-   * them silently flattens the palette — and on the closing CTA (dark text on
-   * a white pill) it makes the label vanish entirely. Assert the contrasts
-   * that carry meaning rather than trusting the cascade.
-   */
-  test('link colours survive the cascade', async ({ page }) => {
+  test('captures the full page in both themes', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
-    await page.goto(URL)
-
-    const cta = page.getByRole('link', { name: /Join the pass waitlist/ })
-    await cta.scrollIntoViewIfNeeded()
-    const ctaStyle = await cta.evaluate((el) => {
-      const cs = getComputedStyle(el)
-      return { color: cs.color, background: cs.backgroundColor }
-    })
-    // Dark ink on the white pill, not white-on-white.
-    expect(ctaStyle.color).toBe('rgb(12, 19, 32)')
-    expect(ctaStyle.background).toBe('rgb(255, 255, 255)')
-
-    // Nav and footer links are deliberately dimmer than full white.
-    const navColor = await page
-      .locator(mod('navLink'))
-      .first()
-      .evaluate((el) => getComputedStyle(el).color)
-    expect(navColor).toBe('rgba(255, 255, 255, 0.72)')
-
-    const footerColor = await page
-      .locator(mod('footerLink'))
-      .first()
-      .evaluate((el) => getComputedStyle(el).color)
-    expect(footerColor).toBe('rgba(255, 255, 255, 0.7)')
-  })
-
-  /*
-   * The shared Button in @/components/ui gets its colours from CSS custom
-   * properties defined by the theme class on the page root. If that class ever
-   * stops being applied the button renders transparent-on-transparent, so
-   * assert the variables actually resolve.
-   */
-  test('shared Button resolves its theme tokens', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
-    await page.goto(URL)
-
-    const register = page.getByRole('button', { name: 'Register' })
-    const style = await register.evaluate((el) => {
-      const cs = getComputedStyle(el)
-      return { bg: cs.backgroundColor, color: cs.color, height: cs.height }
-    })
-    // --btn-bg / --btn-fg, and the md size.
-    expect(style.bg).toBe('rgb(255, 255, 255)')
-    expect(style.color).toBe('rgb(12, 19, 32)')
-    expect(style.height).toBe('40px')
-
-    // secondary-gray draws its outline with an inset shadow from --line-2.
-    const sponsor = page.getByRole('button', { name: 'Sponsor & exhibit' })
-    const shadow = await sponsor.evaluate((el) => getComputedStyle(el).boxShadow)
-    expect(shadow).toContain('inset')
-    expect(shadow).toContain('rgba(255, 255, 255, 0.28)')
-  })
-
-  test('captures the full page', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
-    await page.goto(URL)
-
-    // Let the reveal observers and count-ups settle before shooting
-    for (let i = 0; i < 24; i++) {
-      await page.mouse.wheel(0, 700)
-      await page.waitForTimeout(60)
+    for (const scheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme: scheme })
+      await page.goto(URL)
+      for (let i = 0; i < 24; i++) {
+        await page.mouse.wheel(0, 700)
+        await page.waitForTimeout(60)
+      }
+      await page.evaluate(() => window.scrollTo(0, 0))
+      await page.waitForTimeout(900)
+      await page.screenshot({ path: `test-results/summit-${scheme}-full.png`, fullPage: true })
     }
-    await page.evaluate(() => window.scrollTo(0, 0))
-    await page.waitForTimeout(900)
-
-    await page.screenshot({ path: 'test-results/summit-hero.png' })
-    await page.screenshot({ path: 'test-results/summit-full.png', fullPage: true })
   })
 })
