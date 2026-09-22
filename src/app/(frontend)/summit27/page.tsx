@@ -6,7 +6,7 @@ import theme from '@/styles/theme.module.css'
 import SummitClient from './SummitClient'
 import { avenir } from './fonts'
 
-const TITLE = "AI for Good Summit 2027 - Unlock AI's potential to serve humanity"
+const TITLE = 'AI for Good Global Summit 2027'
 const DESCRIPTION =
   'The AI for Good Global Summit 2026, led by ITU, aims to unlock AI’s potential to serve humanity through building skills and standards, and advancing partnerships to solve global challenges.'
 const OG_IMAGE = '/img/summit27-og.jpg'

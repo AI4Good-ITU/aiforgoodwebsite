@@ -35,7 +35,7 @@ test.describe('Summit 2027', () => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(URL)
 
-    await expect(page).toHaveTitle(/AI for Good Summit 2027/)
+    await expect(page).toHaveTitle(/AI for Good Global Summit 2027/)
 
     // Hero
     await expect(page.locator('h1')).toContainText('AI for Good')

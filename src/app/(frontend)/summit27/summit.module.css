@@ -478,6 +478,12 @@
   position: relative;
   overflow: hidden;
   background: var(--bg-3);
+  box-shadow: 0 0 0 rgba(10, 10, 10, 0);
+  transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.speaker:hover .speakerImgWrap {
+  box-shadow: 0 16px 28px -14px rgba(10, 10, 10, 0.35);
 }
 
 .speakerImg {
@@ -516,12 +522,26 @@
   margin-top: 32px;
 }
 
+.themeTile {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.themeTile:hover {
+  transform: translateY(-6px);
+}
+
 .themeImgWrap {
   position: relative;
   overflow: hidden;
   background: #fff;
   border: 1px solid var(--line);
   padding: 24px;
+  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.04);
+  transition: box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.themeTile:hover .themeImgWrap {
+  box-shadow: 0 20px 32px -12px rgba(10, 10, 10, 0.28);
 }
 
 .themeImg {
@@ -529,6 +549,11 @@
   aspect-ratio: 1;
   object-fit: contain;
   display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.themeTile:hover .themeImg {
+  transform: scale(1.06);
 }
 
 .themeTitle {
@@ -538,6 +563,11 @@
   line-height: 1.3;
   color: #0a0a0a;
   text-align: center;
+}
+
+.themeTile:hover .themeTitle {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* ── Exhibition ────────────────────────────────────────────── */
@@ -624,11 +654,16 @@
   align-items: center;
   justify-content: center;
   padding: 26px 34px;
-  transition: border-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .logoTile:hover {
   border-color: var(--line-2);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px -12px rgba(10, 10, 10, 0.3);
 }
 
 .logoTile img {
