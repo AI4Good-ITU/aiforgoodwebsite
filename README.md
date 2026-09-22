@@ -63,11 +63,12 @@ cp .env.example .env
 # In .env set:
 #   PAYLOAD_SECRET=$(openssl rand -hex 32)
 #   POSTGRES_PASSWORD=<a long random password>
+#   APP_HOST=summit.example.org        # public hostname; must resolve to this server
 # DATABASE_URL is composed from POSTGRES_PASSWORD by the compose file; leave it as is.
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-The app listens on `127.0.0.1:3000` only. Put a reverse proxy in front for TLS and the public hostname — with [Caddy](https://caddyserver.com) that is a two-line `Caddyfile`:
+The app listens on `127.0.0.1:3000` only and carries Traefik labels: with a Traefik that watches Docker and has a `letsencrypt` resolver on a `websecure` entrypoint, `APP_HOST` is routed and gets its certificate automatically. Let's Encrypt does not issue certificates for bare IP addresses, so `APP_HOST` has to be a name. Without Traefik the labels are inert; any reverse proxy can front `127.0.0.1:3000` — with [Caddy](https://caddyserver.com) that is a two-line `Caddyfile`:
 
 ```
 summit.example.org {

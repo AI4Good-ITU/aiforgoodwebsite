@@ -1,11 +1,14 @@
 # Production stack for a single server: Postgres, a one-shot migration run, and
 # the app built from the Dockerfile (standalone Next.js output).
 #
-#   cp .env.example .env            # set PAYLOAD_SECRET and POSTGRES_PASSWORD
+#   cp .env.example .env            # set PAYLOAD_SECRET, POSTGRES_PASSWORD, APP_HOST
 #   docker compose -f docker-compose.prod.yml up -d --build
 #
-# The app listens on 127.0.0.1:3000 only; put a reverse proxy (Caddy, nginx)
-# in front of it for TLS and the public hostname.
+# The app listens on 127.0.0.1:3000 only. The labels below publish it through
+# a Traefik that watches Docker (`providers.docker`, opt-in via labels) with a
+# `letsencrypt` resolver on a `websecure` entrypoint; APP_HOST is the public
+# hostname the certificate is issued for. Without Traefik the labels are inert
+# and any reverse proxy can front 127.0.0.1:3000 instead.
 services:
   postgres:
     image: postgres:17-alpine
@@ -42,6 +45,12 @@ services:
     restart: unless-stopped
     ports:
       - '127.0.0.1:3000:3000'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.aiforgood.rule: Host(`${APP_HOST:?set APP_HOST in .env}`)
+      traefik.http.routers.aiforgood.entrypoints: websecure
+      traefik.http.routers.aiforgood.tls.certresolver: letsencrypt
+      traefik.http.services.aiforgood.loadbalancer.server.port: '3000'
     environment:
       DATABASE_URL: postgres://payload:${POSTGRES_PASSWORD}@postgres:5432/aiforgoodwebsite
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:?set PAYLOAD_SECRET in .env}
