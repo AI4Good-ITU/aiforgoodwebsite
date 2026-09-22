@@ -10,7 +10,7 @@ const mod = (name: string) => `[class$="__${name}"], [class*="__${name} "]`
  * supporting, the common handset sizes, both tablet orientations, and the
  * laptop and desktop the composition was drawn for.
  */
-const WIDTHS = [320, 390, 430, 640, 768, 1024, 1180, 1440]
+const WIDTHS = [320, 375, 390, 430, 640, 768, 1024, 1180, 1440]
 
 /**
  * Reveal-on-scroll leaves sections translated and transparent until they are
@@ -43,11 +43,6 @@ function columnCount(page: Page, selector: string) {
 }
 
 test.describe('Summit 2027 — responsive', () => {
-  /*
-   * The page was authored as a fixed 1280px composition (`.root` carried
-   * `min-width: 1280px`), so every width below that scrolled sideways. This is
-   * the assertion that keeps it from coming back.
-   */
   for (const width of WIDTHS) {
     test(`fits the viewport at ${width}px`, async ({ page }) => {
       await open(page, width)
@@ -57,29 +52,19 @@ test.describe('Summit 2027 — responsive', () => {
         const vw = de.clientWidth
 
         /*
-         * Decorative layers are deliberately larger than their frame — washes
-         * bleed past the edge, the marquee is twice the page wide, parallax
-         * images are pre-scaled. Each sits inside a clipping parent, so the
-         * page still does not scroll; exempt them by name.
+         * Decorative layers are deliberately larger than their frame — the
+         * hero mark runs off the right edge by design, the wash bleeds, the
+         * marquee is twice the page wide. Each sits inside a clipping parent,
+         * so the page still does not scroll; exempt them by name.
          */
-        const exempt =
-          /__(heroWash|closingWash|heroGlow|tickerTrack|tickerRun|tickerItem|tickerDot|parallaxImg|heroImg|scrim|highlightScrim|venueScrim)\b/
-
-        /* Anything inside a sideways scroller is allowed past the fold. */
-        const inScroller = (el: Element) => {
-          for (let n = el.parentElement; n; n = n.parentElement) {
-            const ox = getComputedStyle(n).overflowX
-            if (ox === 'auto' || ox === 'scroll') return true
-          }
-          return false
-        }
+        const exempt = /__(heroWash|heroMark|tickerTrack|tickerRun|tickerItem|tickerDot|coverImg|venueScrim)\b/
 
         const past: string[] = []
         for (const el of document.querySelectorAll('body *')) {
           const cs = getComputedStyle(el)
           if (cs.display === 'none' || cs.visibility === 'hidden') continue
           const cls = typeof el.className === 'string' ? el.className : ''
-          if (exempt.test(cls) || inScroller(el)) continue
+          if (exempt.test(cls) || el.closest(`[class*="__heroMark"]`)) continue
           const r = el.getBoundingClientRect()
           if (r.width === 0 && r.height === 0) continue
           if (r.right > vw + 1 || r.left < -1) {
@@ -109,13 +94,13 @@ test.describe('Summit 2027 — responsive', () => {
     await toggle.click()
     const menu = page.getByRole('dialog')
     await expect(menu).toBeVisible()
-    await expect(menu.getByRole('link', { name: 'Programme' })).toBeVisible()
-    await expect(menu.getByRole('button', { name: 'Register' })).toBeVisible()
+    await expect(menu.getByRole('link', { name: 'Speakers' })).toBeVisible()
+    await expect(menu.getByRole('link')).toHaveCount(4)
 
     // Choosing a destination closes the sheet and moves the page to it.
-    await menu.getByRole('link', { name: 'Passes' }).click()
+    await menu.getByRole('link', { name: 'Sponsors' }).click()
     await expect(menu).toHaveCount(0)
-    expect(page.url()).toContain('#passes')
+    expect(page.url()).toContain('#sponsors')
     // Radix's scroll lock has to be released, or the page is stuck.
     expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden')
   })
@@ -131,143 +116,88 @@ test.describe('Summit 2027 — responsive', () => {
   test('the multi-column grids step down with the viewport', async ({ page }) => {
     await open(page, 1440)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(4)
-    expect(await columnCount(page, mod('passGrid'))).toBe(3)
-    expect(await columnCount(page, mod('logoGrid'))).toBe(5)
+    expect(await columnCount(page, mod('logoGrid'))).toBe(4)
     expect(await columnCount(page, mod('newsGrid'))).toBe(3)
-    expect(await columnCount(page, mod('practicalGrid'))).toBe(4)
+    expect(await columnCount(page, mod('quoteGrid'))).toBe(2)
     expect(await columnCount(page, mod('footerGrid'))).toBe(4)
+    expect(await columnCount(page, mod('exhibitionGrid'))).toBe(2)
+    expect(await columnCount(page, mod('dialogueInner'))).toBe(2)
 
     await open(page, 1024)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(3)
-    expect(await columnCount(page, mod('logoGrid'))).toBe(4)
-    expect(await columnCount(page, mod('practicalGrid'))).toBe(2)
+    expect(await columnCount(page, mod('footerGrid'))).toBe(3)
 
     await open(page, 768)
     // Speakers hold three across a tablet; they drop to two at 720.
     expect(await columnCount(page, mod('speakerGrid'))).toBe(3)
-    expect(await columnCount(page, mod('passGrid'))).toBe(1)
-    // Logos hold four across a tablet; they drop to three at 720.
-    expect(await columnCount(page, mod('logoGrid'))).toBe(4)
-    // News holds two across a tablet; it drops to one at 720.
-    expect(await columnCount(page, mod('newsGrid'))).toBe(2)
-
-    await open(page, 640)
-    expect(await columnCount(page, mod('newsGrid'))).toBe(1)
     expect(await columnCount(page, mod('logoGrid'))).toBe(3)
+    expect(await columnCount(page, mod('newsGrid'))).toBe(2)
+    expect(await columnCount(page, mod('quoteGrid'))).toBe(1)
+    expect(await columnCount(page, mod('exhibitionGrid'))).toBe(1)
+    expect(await columnCount(page, mod('dialogueInner'))).toBe(1)
 
     await open(page, 390)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(2)
     expect(await columnCount(page, mod('logoGrid'))).toBe(2)
-    expect(await columnCount(page, mod('practicalGrid'))).toBe(1)
+    expect(await columnCount(page, mod('newsGrid'))).toBe(1)
+    expect(await columnCount(page, mod('footerGrid'))).toBe(2)
   })
 
-  test('a pass price never breaks across two lines', async ({ page }) => {
-    /*
-     * "CHF 4,900" beside a struck-through "CHF 5,600" is what sets the minimum
-     * usable card width. Three cards narrower than that wrapped the pair, which
-     * read as two prices rather than one and a markdown.
-     */
-    for (const width of [390, 768, 1024, 1100, 1180, 1280, 1440]) {
-      await open(page, width)
-      const rows = await page.locator(mod('passPriceRow')).evaluateAll((els) =>
-        els.map((el) => {
-          const price = el.querySelector('[class*="__passPrice"]') as HTMLElement
-          return {
-            rowHeight: Math.round(el.getBoundingClientRect().height),
-            lineHeight: Math.round(price.getBoundingClientRect().height),
-          }
-        }),
-      )
-      expect(rows.length, `pass cards at ${width}px`).toBe(3)
-      for (const row of rows) {
-        expect(row.rowHeight, `price row wrapped at ${width}px`).toBeLessThanOrEqual(
-          row.lineHeight + 2,
-        )
-      }
-    }
-  })
-
-  test('the hero splits into one column and the photo keeps its frame covered', async ({
-    page,
-  }) => {
+  test('the part rows stack on a phone instead of squeezing four columns', async ({ page }) => {
     await open(page, 1440)
-    expect(await columnCount(page, mod('heroGrid'))).toBe(2)
-
-    for (const width of [390, 768, 1440]) {
-      await open(page, width)
-      if (width < 900) expect(await columnCount(page, mod('heroGrid'))).toBe(1)
-
-      /*
-       * The photo is sized to 112% and pulled back 6% on each side so the
-       * pointer parallax has somewhere to travel. The frontend's global
-       * `img { max-width: 100% }` used to clamp it back to 100%, which left it
-       * offset with a gap down the right-hand edge of the frame.
-       */
-      const frame = await page.locator(mod('heroMedia')).boundingBox()
-      const img = await page.locator(mod('heroImg')).boundingBox()
-      expect(frame, `hero frame at ${width}px`).not.toBeNull()
-      expect(img, `hero photo at ${width}px`).not.toBeNull()
-      expect(img!.x, `photo left edge at ${width}px`).toBeLessThanOrEqual(frame!.x)
-      expect(img!.x + img!.width, `photo right edge at ${width}px`).toBeGreaterThanOrEqual(
-        frame!.x + frame!.width,
-      )
-    }
-  })
-
-  test('the session and part rows re-flow instead of squeezing', async ({ page }) => {
-    // Five columns on the desktop composition, stacked on a phone.
-    await open(page, 1440)
-    expect(await columnCount(page, mod('sessionRow'))).toBe(5)
     expect(await columnCount(page, mod('partRow'))).toBe(4)
+    const wide = await page.locator(mod('partRow')).first().boundingBox()
 
     await open(page, 390)
-    expect(await columnCount(page, mod('sessionRow'))).toBe(2)
-    expect(await columnCount(page, mod('partRow'))).toBe(2)
-
-    // Stacked, a row is taller than one line of text — proof it actually wrapped.
-    const row = await page.locator(mod('sessionRow')).first().boundingBox()
-    expect(row!.height).toBeGreaterThan(80)
+    expect(await columnCount(page, mod('partRow'))).toBe(1)
+    // Stacked, a row is much taller than its one-line desktop form.
+    const narrow = await page.locator(mod('partRow')).first().boundingBox()
+    expect(narrow!.height).toBeGreaterThan(wide!.height * 1.6)
   })
 
-  test('the day tabs scroll sideways rather than widening the page', async ({ page }) => {
-    await open(page, 390)
-    await page.locator('#programme').scrollIntoViewIfNeeded()
+  /*
+   * The design pins the mark to the viewport's right edge, not to the content
+   * column: at 1440 its glyph sits at x 845–1258 with the canvas running off
+   * the page. On a phone it moves behind the copy, still bleeding right.
+   */
+  test('the hero mark is anchored to the viewport edge', async ({ page }) => {
+    await open(page, 1440)
+    const img = page.locator(mod('heroMark')).locator('img')
+    let box = await img.boundingBox()
+    expect(box!.x + box!.width).toBeGreaterThanOrEqual(1440)
+    expect(Math.round(box!.width)).toBe(825)
+    expect(Math.round(box!.x)).toBe(617)
 
-    const list = page.getByRole('tablist')
-    const box = await list.evaluate((el) => ({
-      overflowX: getComputedStyle(el).overflowX,
-      scrollable: el.scrollWidth > el.clientWidth,
-      width: Math.round(el.getBoundingClientRect().width),
-    }))
-    expect(box.overflowX).toBe('auto')
-    expect(box.scrollable, 'the strip should have somewhere to scroll').toBe(true)
-    expect(box.width).toBeLessThanOrEqual(390)
-
-    // All four days stay reachable.
-    await expect(page.getByRole('tab')).toHaveCount(4)
-    await page.getByRole('tab', { name: /Sat 10 July/ }).click()
-    await expect(page.locator(mod('sessionCount'))).toContainText('Sat 10 July')
+    await open(page, 375)
+    box = await img.boundingBox()
+    expect(box!.x + box!.width).toBeGreaterThan(375)
+    // The hero itself clips it, so the page does not scroll sideways.
+    const hero = page.locator('#top')
+    await expect(hero).toHaveCSS('overflow', 'hidden')
   })
 
-  test('the speaker sheet goes full width on a phone', async ({ page }) => {
-    await open(page, 390)
-    await page.locator('#speakers').scrollIntoViewIfNeeded()
-    await page.locator(mod('speaker')).first().click()
+  test('the section links become full-width buttons on a phone', async ({ page }) => {
+    await open(page, 1440)
+    await expect(page.locator(mod('moreLinkDesktop')).first()).toBeVisible()
+    await expect(page.locator(mod('mobileCta')).first()).toBeHidden()
 
-    const panel = page.getByRole('dialog')
-    await expect(panel).toBeVisible()
-    /*
-     * Edge to edge: a 520px sheet inset from the right wastes a phone screen.
-     * Poll rather than read once — the sheet slides in from translateX(40px),
-     * so measuring on the first frame catches it mid-animation.
-     */
-    await expect
-      .poll(async () => {
-        const box = await panel.boundingBox()
-        return box ? Math.round(box.x) : null
-      })
-      .toBe(0)
-    const box = await panel.boundingBox()
-    expect(box!.width).toBeCloseTo(390, 1)
+    await open(page, 390)
+    await expect(page.locator(mod('moreLinkDesktop')).first()).toBeHidden()
+    const cta = page.locator(mod('mobileCta')).first()
+    await cta.scrollIntoViewIfNeeded()
+    await expect(cta).toBeVisible()
+    const box = await cta.boundingBox()
+    // Edge to edge inside the 16px phone gutter.
+    expect(Math.round(box!.x)).toBe(16)
+    expect(Math.round(box!.width)).toBe(390 - 32)
+  })
+
+  test('the hero keeps the wider inset the design gives it on a phone', async ({ page }) => {
+    await open(page, 375)
+    const title = await page.locator('h1').boundingBox()
+    const eyebrow = await page.locator(mod('eyebrow')).first().boundingBox()
+    // Hero copy sits 32px in; every other section sits 16px in.
+    expect(Math.round(title!.x)).toBe(32)
+    expect(Math.round(eyebrow!.x)).toBe(16)
   })
 })

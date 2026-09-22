@@ -14,10 +14,7 @@ export const metadata: Metadata = {
 
 export default function Summit27Page() {
   // The theme class supplies the colour tokens that both this page's
-  // stylesheet and the shared components in @/components/ui read.
-  return (
-    <div className={`${avenir.variable} ${theme.blend}`}>
-      <SummitClient />
-    </div>
-  )
+  // stylesheet and the shared components in @/components/ui read. It follows
+  // the OS unless <html data-theme> says otherwise (see the frontend layout).
+  return <SummitClient themeClass={`${avenir.variable} ${theme.summit}`} />
 }

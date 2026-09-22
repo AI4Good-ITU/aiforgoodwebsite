@@ -1,57 +1,49 @@
 .root {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
 .legend {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-3);
-  margin-right: 6px;
+  color: var(--text-2);
+  margin-right: 25px;
 }
 
+/*
+ * Only the selected chip is drawn. The rest are plain labels, which is what
+ * keeps the row reading as one line of text with the current filter marked
+ * rather than as seven competing buttons.
+ */
 .chip {
   appearance: none;
   cursor: pointer;
-  padding: 9px 16px;
-  border-radius: 999px;
+  height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 6px;
   font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 400;
   line-height: 1;
   background: transparent;
   color: var(--text-2);
-  border: 1px solid var(--line);
   transition:
     background 0.18s ease,
-    color 0.18s ease,
-    border-color 0.18s ease;
+    color 0.18s ease;
 }
 
 .chip:hover[data-state='off'] {
-  border-color: var(--line-2);
   color: var(--text);
 }
 
 .chip[data-state='on'] {
-  background: var(--btn-bg);
-  color: var(--btn-fg);
-  border-color: var(--btn-bg);
-}
-
-@media (max-width: 640px) {
-  .legend {
-    /* On its own line above the chips rather than squeezed beside them. */
-    flex: 1 0 100%;
-    margin: 0 0 2px;
-  }
-
-  .chip {
-    padding: 8px 13px;
-  }
+  background: var(--bg-3);
+  color: var(--text);
+  font-weight: 500;
 }

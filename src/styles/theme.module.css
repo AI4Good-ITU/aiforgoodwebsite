@@ -1,40 +1,123 @@
 /*
- * Design tokens for the "Blend" direction — dark base, violet/cyan spectrum.
+ * Design tokens for the Summit 2027 page.
  *
- * Apply `.blend` to a page root. Everything below it, including the shared
+ * Apply `.summit` to a page root. Everything below it, including the shared
  * components in src/components/ui, reads these variables. Keeping the tokens
  * here rather than in a page's stylesheet is what lets those components be
  * used by any page instead of only the one they were written for.
  *
- * To add a second direction, add a sibling class exporting the same variable
- * names; no component needs to change.
+ * The values are the Figma token set: the slate ramp for surfaces and text,
+ * the brand black ramp for solid buttons and the full-bleed dark bands, and
+ * #fbd207 for the single accent.
+ *
+ * Every token is declared once, as `light-dark(light, dark)`. That resolves
+ * against the element's own `color-scheme`, so the whole palette flips from
+ * the two rules at the bottom — no second copy of the block to keep in sync,
+ * and no media query repeated per token. Gradients cannot be passed to
+ * light-dark() directly, so those are assembled from light-dark() colour
+ * stops instead.
  */
-.blend {
-  --bg: #0c1320;
-  --bg-2: #121c2c;
-  --bg-3: #1a2536;
-  --card: #121c2c;
 
-  --text: #ffffff;
-  --text-2: rgba(255, 255, 255, 0.66);
-  --text-3: rgba(255, 255, 255, 0.42);
+.summit {
+  /* Follow the OS unless `data-theme` below overrides it. */
+  color-scheme: light dark;
 
-  --line: rgba(255, 255, 255, 0.13);
-  --line-2: rgba(255, 255, 255, 0.28);
+  --bg: light-dark(#ffffff, #020617);
+  --bg-2: light-dark(#f8fafc, #0f172a);
+  --bg-3: light-dark(#f1f5f9, #1e293b);
 
-  /* Buttons read these; --btn-glow is set by call sites on hover. */
-  --btn-bg: #ffffff;
-  --btn-bg-h: #e8e4da;
-  --btn-fg: #0c1320;
+  --text: light-dark(#0f172a, #f8fafc);
+  --text-2: light-dark(#475569, #94a3b8);
+  --text-3: light-dark(#64748b, #64748b);
+  --text-4: light-dark(#94a3b8, #475569);
 
-  --nav-bg: rgba(12, 19, 32, 0.84);
-  --band: #060a11;
-  --glow: rgba(255, 255, 255, 0.7);
+  --line: light-dark(#e2e8f0, #1e293b);
+  --line-2: light-dark(#cbd5e1, #334155);
+
+  /* Buttons read these. Primary is brand black on light, white on dark. */
+  --btn-bg: light-dark(#1a1a1a, #ffffff);
+  --btn-bg-h: light-dark(#111111, #e5e7eb);
+  --btn-fg: light-dark(#ffffff, #0a0a0a);
+  --btn-2-bg: light-dark(#ffffff, transparent);
+  --btn-2-bg-h: light-dark(#f8fafc, #0f172a);
+  --btn-2-fg: light-dark(#0f172a, #f8fafc);
+  --btn-2-line: light-dark(#cbd5e1, #334155);
+
+  /* The full-bleed dark bands — ticker, Global Dialogue, footer — are the
+     same in both modes, so these are plain values. */
+  --band: #020617;
+  --band-2: #0a0a0a;
+  --band-text: #ffffff;
+  /* The dark bands read off the brand ramp rather than slate: these are the
+     token set's "on brand" text colours. */
+  --band-text-2: #cccccc;
+  --band-text-3: #adadad;
+  --band-line: rgba(255, 255, 255, 0.14);
+
+  --nav-bg: light-dark(rgba(255, 255, 255, 0.82), rgba(2, 6, 23, 0.82));
   --logo-tile: #ffffff;
 
-  --violet: #7b5cfa;
-  --cyan: #22d3ee;
-  --amber: #f5b93d;
-  --spec: linear-gradient(100deg, #7b5cfa, #22d3ee);
-  --spec-sat: 1;
+  --accent: #fbd207;
+
+  /* Washes. --wash-* are the colour stops the gradients below are built
+     from, which is what lets a gradient pick up the mode. */
+  --wash-accent: light-dark(rgba(251, 210, 7, 0.1), rgba(251, 210, 7, 0.07));
+  --wash-haze: light-dark(rgba(15, 23, 42, 0.04), rgba(148, 163, 184, 0.07));
+  --hero-wash: radial-gradient(52% 62% at 72% 44%, var(--wash-accent) 0%, transparent 70%),
+    radial-gradient(46% 56% at 18% 22%, var(--wash-haze) 0%, transparent 68%);
+
+  /* Warm at the top-left and again at the bottom-right, neutral along the
+     diagonal between them — hence one gradient with the warm stop at both
+     ends rather than a simple left-to-right fade. */
+  --closing-warm: light-dark(#f9f5dd, #2a2c26);
+  --closing-cool: light-dark(#f8fafc, #131a2b);
+  --closing-wash: linear-gradient(
+    135deg,
+    var(--closing-warm) 0%,
+    var(--closing-cool) 52%,
+    var(--closing-warm) 100%
+  );
+
+  /* Track badges: fill / border / ink, per family. */
+  --badge-slate-bg: light-dark(#f8fafc, #0f172a);
+  --badge-slate-line: light-dark(#e2e8f0, #334155);
+  --badge-slate-fg: light-dark(#334155, #cbd5e1);
+
+  --badge-green-bg: light-dark(#f0fdf4, #052e16);
+  --badge-green-line: light-dark(#bbf7d0, #166534);
+  --badge-green-fg: light-dark(#15803d, #86efac);
+
+  --badge-sky-bg: light-dark(#f0f9ff, #082f49);
+  --badge-sky-line: light-dark(#bae6fd, #075985);
+  --badge-sky-fg: light-dark(#0369a1, #7dd3fc);
+
+  --badge-purple-bg: light-dark(#faf5ff, #3b0764);
+  --badge-purple-line: light-dark(#e9d5ff, #6b21a8);
+  --badge-purple-fg: light-dark(#7e22ce, #d8b4fe);
+
+  --badge-orange-bg: light-dark(#fff7ed, #431407);
+  --badge-orange-line: light-dark(#fed7aa, #9a3412);
+  --badge-orange-fg: light-dark(#c2410c, #fdba74);
+
+  --badge-pink-bg: light-dark(#fdf2f8, #500724);
+  --badge-pink-line: light-dark(#fbcfe8, #9d174d);
+  --badge-pink-fg: light-dark(#be185d, #f9a8d4);
+
+  /* Newsroom category dots. */
+  --dot-summit: #fdba74;
+  --dot-standards: #38bdf8;
+  --dot-youth: #d946ef;
+}
+
+/*
+ * The explicit overrides, keyed off <html data-theme> so a saved choice can be
+ * restored from <head> before the page paints. Setting color-scheme is all it
+ * takes: every light-dark() above re-resolves against it.
+ */
+:global(html[data-theme='light']) .summit {
+  color-scheme: light;
+}
+
+:global(html[data-theme='dark']) .summit {
+  color-scheme: dark;
 }

@@ -14,6 +14,14 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
+/* In-page anchors glide rather than jump — unless the visitor has asked for
+   less motion, in which case they jump. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 html,
 body,
 #app {
