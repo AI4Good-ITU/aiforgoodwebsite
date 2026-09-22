@@ -35,38 +35,47 @@ test.describe('Summit 2027', () => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(URL)
 
-    await expect(page).toHaveTitle(/AI for Good Global Summit 2027/)
+    await expect(page).toHaveTitle(/AI for Good Summit 2027/)
 
     // Hero
     await expect(page.locator('h1')).toContainText('AI for Good')
     await expect(page.locator('h1')).toContainText('Global Summit')
     await expect(page.locator('h1')).toContainText('2027')
-    await expect(page.getByText('7–10 July 2027').first()).toBeVisible()
+    await expect(page.getByText('21–24 June 2027').first()).toBeVisible()
     await expect(page.getByText('Palexpo, Geneva').first()).toBeVisible()
     await expect(page.locator(mod('heroMark')).locator('img')).toBeVisible()
 
     // Section headings, in document order
     for (const heading of [
-      'Six parts, one hall.',
-      'Who takes the stage',
+      'Explore the 2026 speakers',
       'Two hundred stands you can actually touch.',
-      'The United Nations’ leading platform on Artificial Intelligence.',
+      '53 UN Partners',
+      '2026 Sponsors',
       'Newsroom',
-      'What they said on stage',
+      'In their words',
     ]) {
       await expect(page.getByRole('heading', { name: heading })).toBeAttached()
     }
 
     // Anchor targets the nav and footer links point at
-    for (const id of ['top', 'week', 'speakers', 'exhibition', 'about', 'sponsors', 'news', 'voices']) {
+    for (const id of [
+      'top',
+      'speakers',
+      'exhibition',
+      'un-partners',
+      'sponsors',
+      'news',
+      'voices',
+    ]) {
       await expect(page.locator(`#${id}`)).toBeAttached()
     }
 
     // Collection counts
-    await expect(page.locator(mod('partRow'))).toHaveCount(6)
     await expect(page.locator(mod('speaker'))).toHaveCount(12)
-    await expect(page.locator(mod('tier'))).toHaveCount(6)
-    await expect(page.locator(mod('logoTile'))).toHaveCount(29)
+    await expect(page.locator(mod('tier'))).toHaveCount(9)
+    await expect(page.locator(mod('logoTile'))).toHaveCount(59)
+    // Duplicated for the seamless marquee loop: 53 real + 53 aria-hidden clones.
+    await expect(page.locator(mod('partnerTile'))).toHaveCount(106)
     await expect(page.locator(mod('newsCard'))).toHaveCount(3)
     await expect(page.locator(mod('quote'))).toHaveCount(4)
 
@@ -102,20 +111,25 @@ test.describe('Summit 2027', () => {
 
     // Buttons that are really links.
     await external(
-      page.getByRole('link', { name: 'Sponsorship opportunities' }),
-      /aiforgood\.itu\.int\/engage\/sponsor\//,
+      page.getByRole('link', { name: 'Sponsorship opportunities' }).first(),
+      /aiforgood\.itu\.int\/sponsor\//,
     )
     await external(
       page.getByRole('link', { name: 'Discover the 2026 exhibitors' }),
       /summit26\/exhibitors\//,
     )
-    await external(page.getByRole('link', { name: 'About us' }), /about-ai-for-good\//)
-    await external(page.getByRole('link', { name: /Become a sponsor/ }), /aiforgood\.itu\.int\/sponsor\//)
+    await external(page.getByRole('link', { name: 'About us' }).first(), /about-ai-for-good\//)
+    await external(page.getByRole('link', { name: /Become a sponsor/ }).first(), /aiforgood\.itu\.int\/sponsor\//)
 
-    // Each sponsor tile links to the sponsor.
-    const tiles = page.locator(mod('logoTile'))
-    await external(tiles.first(), /admin\.ch/)
-    await expect(tiles.first()).toHaveAttribute('aria-label', 'Swiss Confederation')
+    // Each sponsor tile links to the sponsor; the Co-Convener tile is first within Sponsors.
+    const sponsorTiles = page.locator('#sponsors').locator(mod('logoTile'))
+    await external(sponsorTiles.first(), /admin\.ch/)
+    await expect(sponsorTiles.first()).toHaveAttribute('aria-label', 'Swiss Confederation')
+
+    // UN partner tiles sit in their own section, ahead of Sponsors.
+    const unPartnerTiles = page.locator('#un-partners').locator(mod('partnerTile'))
+    await external(unPartnerTiles.first(), /unaids\.org/)
+    await expect(unPartnerTiles.first()).toHaveAttribute('aria-label', 'UNAIDS')
   })
 
   /*
@@ -155,8 +169,8 @@ test.describe('Summit 2027', () => {
     await expect(root).toHaveCSS('background-color', 'rgb(255, 255, 255)')
     await expect(root).toHaveCSS('color', 'rgb(15, 23, 42)')
     // secondary-gray on light: white face, slate hairline.
-    await expect(sponsor).toHaveCSS('background-color', 'rgb(255, 255, 255)')
-    await expect(sponsor).toHaveCSS('border-color', 'rgb(203, 213, 225)')
+    await expect(sponsor.first()).toHaveCSS('background-color', 'rgb(255, 255, 255)')
+    await expect(sponsor.first()).toHaveCSS('border-color', 'rgb(203, 213, 225)')
 
     await page.emulateMedia({ colorScheme: 'dark' })
     await expect(root).toHaveCSS('background-color', 'rgb(2, 6, 23)')
@@ -180,7 +194,7 @@ test.describe('Summit 2027', () => {
     await page.goto(URL)
 
     // primary: brand black with white ink, square corners, the xl height.
-    const primary = page.getByRole('button', { name: 'Get first access to passes' })
+    const primary = page.getByRole('button', { name: 'Sign up for updates' })
     await expect(primary).toHaveCSS('background-color', 'rgb(26, 26, 26)')
     await expect(primary).toHaveCSS('color', 'rgb(255, 255, 255)')
     await expect(primary).toHaveCSS('border-radius', '0px')
@@ -190,12 +204,6 @@ test.describe('Summit 2027', () => {
     const asLink = page.getByRole('link', { name: 'Discover the 2026 exhibitors' })
     await expect(asLink).toHaveCSS('background-color', 'rgb(26, 26, 26)')
     await expect(asLink).toHaveCSS('color', 'rgb(255, 255, 255)')
-
-    // on-band is fixed white-on-black regardless of theme.
-    await page.emulateMedia({ colorScheme: 'dark' })
-    const about = page.getByRole('link', { name: 'About us' })
-    await expect(about).toHaveCSS('background-color', 'rgb(255, 255, 255)')
-    await expect(about).toHaveCSS('color', 'rgb(10, 10, 10)')
   })
 
   test('nav gains a surface on scroll and the progress bar advances', async ({ page }) => {
@@ -266,16 +274,22 @@ test.describe('Summit 2027', () => {
     expect(x).toBe(0)
   })
 
-  test('unbuilt destinations report themselves instead of navigating', async ({ page }) => {
+  test('the newsletter popup submits without leaving the page', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(URL)
 
-    const toast = page.locator(mod('toast'))
-    await expect(toast).not.toHaveClass(/shown/)
+    // Stub the API route so the test never calls the real Mailchimp integration.
+    await page.route('**/api/summit27-newsletter', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }),
+    )
 
-    await page.getByRole('button', { name: 'Get first access to passes' }).click()
-    await expect(toast).toHaveClass(/shown/)
-    await expect(toast).toContainText('Pass waitlist — not built in this prototype')
+    await page.getByRole('button', { name: 'Sign up for updates' }).click()
+    const dialog = page.getByRole('dialog', { name: 'Sign up for updates' })
+    await expect(dialog).toBeVisible()
+
+    await dialog.getByLabel('Email address').fill('test@example.com')
+    await dialog.getByRole('button', { name: 'Sign up' }).click()
+    await expect(dialog.getByText('You’re subscribed — thanks!')).toBeVisible()
 
     expect(page.url()).toBe(URL)
   })

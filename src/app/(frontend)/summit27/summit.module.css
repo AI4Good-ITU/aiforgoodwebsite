@@ -453,52 +453,6 @@
   line-height: 1;
 }
 
-/* ── Six parts ─────────────────────────────────────────────── */
-
-.partsList {
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid var(--line);
-}
-
-.partRow {
-  display: grid;
-  grid-template-columns: 72px 303px minmax(0, 1fr) auto;
-  align-items: baseline;
-  padding: 19px 0;
-  border-top: 1px solid var(--line);
-}
-
-.partNum {
-  font-weight: 700;
-  font-size: 32px;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--line-2);
-}
-
-.partTitle {
-  font-weight: 600;
-  font-size: 19px;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  color: var(--text);
-}
-
-.partDesc {
-  font-size: 15px;
-  line-height: 1.55;
-  color: var(--text-2);
-}
-
-.partAccess {
-  justify-self: end;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1;
-  color: var(--text-3);
-}
-
 /* ── Speakers ──────────────────────────────────────────────── */
 
 .speakerGrid {
@@ -603,58 +557,6 @@
   gap: 24px;
 }
 
-/* ── Global Dialogue band ──────────────────────────────────── */
-
-.dialogue {
-  background: var(--band-2);
-}
-
-.dialogueInner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: 48px;
-  padding-top: 106px;
-  padding-bottom: 104px;
-}
-
-.dialogueBody {
-  max-width: 820px;
-}
-
-.dialogueTitle {
-  margin: 0;
-  font-weight: 600;
-  font-size: 34px;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: var(--band-text);
-}
-
-.dialogueSub {
-  margin: 22px 0 0;
-  font-size: 21px;
-  line-height: 1.4;
-  color: var(--band-text-2);
-}
-
-.dialogueSub strong {
-  font-weight: 600;
-  color: var(--band-text);
-}
-
-.dialogueText {
-  margin: 18px 0 0;
-  font-size: 16px;
-  line-height: 1.62;
-  color: var(--band-text-2);
-  max-width: 720px;
-}
-
-.dialogueCta {
-  justify-self: end;
-}
-
 /* ── Partners ──────────────────────────────────────────────── */
 
 .tier {
@@ -677,7 +579,7 @@
 
 .logoGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 18px 16px;
 }
 
@@ -702,29 +604,55 @@
   object-fit: contain;
 }
 
-.sponsorCta {
-  margin-top: 40px;
-  padding: 26px 30px;
+/* ── UN partners marquee ───────────────────────────────────── */
+
+.partnersHead {
+  padding-top: var(--section-pad);
+}
+
+.partnersViewport {
+  margin-top: 32px;
+  padding-bottom: var(--section-pad);
+  overflow: hidden;
+}
+
+.partnersTrack {
+  display: flex;
+  width: max-content;
+  gap: 20px;
+  animation: marquee 60s linear infinite;
+}
+
+.partnersTrack:hover {
+  animation-play-state: paused;
+}
+
+.partnersRun {
+  display: flex;
+  gap: 20px;
+}
+
+.partnerTile {
+  flex: none;
+  width: 186px;
+  height: 122px;
+  background: var(--logo-tile);
   border: 1px solid var(--line);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 32px;
+  justify-content: center;
+  padding: 22px 28px;
+  transition: border-color 0.2s ease;
 }
 
-.sponsorTitle {
-  font-weight: 600;
-  font-size: 19px;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  color: var(--text);
+.partnerTile:hover {
+  border-color: var(--line-2);
 }
 
-.sponsorText {
-  margin-top: 10px;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--text-2);
+.partnerTile img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .sponsorBtn {
@@ -1020,6 +948,41 @@
   border-bottom: 1px solid var(--line);
 }
 
+/* ── Newsletter signup ─────────────────────────────────────── */
+
+.newsletterForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.newsletterLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.newsletterInput {
+  height: 48px;
+  padding: 0 16px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+
+.newsletterNote {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.newsletterNoteError {
+  color: #c0392b;
+}
+
 /* ── Keyframes ─────────────────────────────────────────────── */
 
 @keyframes marquee {
@@ -1050,18 +1013,8 @@
 
 /* ── ≤1280px — the fixed columns become proportional ── */
 @media (max-width: 1280px) {
-  .partRow {
-    grid-template-columns: 72px minmax(180px, 1.1fr) minmax(0, 1.9fr) auto;
-    column-gap: 24px;
-  }
-
   .exhibitionCopy {
     padding: 80px var(--gutter) 80px 64px;
-  }
-
-  .dialogueInner {
-    grid-template-columns: 130px minmax(0, 1fr) auto;
-    column-gap: 20px;
   }
 
 }
@@ -1139,11 +1092,9 @@
     margin-right: 4px;
   }
 
-  /* Hero: the mark sits behind the copy rather than beside it. */
+  /* Hero: the mark competes with the copy on a narrow screen, so drop it. */
   .heroMark {
-    width: 120vw;
-    top: -2vw;
-    right: -45vw;
+    display: none;
   }
 
   .heroGrid {
@@ -1197,22 +1148,6 @@
     width: 100%;
   }
 
-  /* Six numbered rows stack: number, title, blurb, access. */
-  .partRow {
-    grid-template-columns: 1fr;
-    row-gap: 10px;
-    padding: 26px 0;
-  }
-
-  .partNum {
-    font-size: 26px;
-    margin-bottom: 4px;
-  }
-
-  .partAccess {
-    justify-self: start;
-  }
-
   .newsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1221,7 +1156,7 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .sponsorCta {
+  .sectionHead:has(.sponsorBtn) {
     flex-direction: column;
     align-items: stretch;
     gap: 22px;
@@ -1229,21 +1164,6 @@
 
   .sponsorBtn > a {
     display: flex;
-    width: 100%;
-  }
-
-  .dialogueInner {
-    grid-template-columns: 1fr;
-    row-gap: 30px;
-    padding-top: var(--section-pad);
-    padding-bottom: var(--section-pad);
-  }
-
-  .dialogueCta {
-    justify-self: stretch;
-  }
-
-  .dialogueCta > a {
     width: 100%;
   }
 
@@ -1331,14 +1251,6 @@
 
   .quoteText {
     font-size: 17px;
-  }
-
-  .dialogueTitle {
-    font-size: 26px;
-  }
-
-  .dialogueSub {
-    font-size: 18px;
   }
 
   .speakerGrid {

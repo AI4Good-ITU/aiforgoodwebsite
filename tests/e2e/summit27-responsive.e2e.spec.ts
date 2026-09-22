@@ -57,14 +57,19 @@ test.describe('Summit 2027 — responsive', () => {
          * marquee is twice the page wide. Each sits inside a clipping parent,
          * so the page still does not scroll; exempt them by name.
          */
-        const exempt = /__(heroWash|heroMark|tickerTrack|tickerRun|tickerItem|tickerDot|coverImg|venueScrim)\b/
+        const exempt =
+          /__(heroWash|heroMark|footerMark|tickerTrack|tickerRun|tickerItem|tickerDot|partnersTrack|partnersRun|partnerTile|coverImg|venueScrim)\b/
 
         const past: string[] = []
         for (const el of document.querySelectorAll('body *')) {
           const cs = getComputedStyle(el)
           if (cs.display === 'none' || cs.visibility === 'hidden') continue
           const cls = typeof el.className === 'string' ? el.className : ''
-          if (exempt.test(cls) || el.closest(`[class*="__heroMark"]`)) continue
+          if (
+            exempt.test(cls) ||
+            el.closest(`[class*="__heroMark"], [class*="__footerMark"], [class*="__partnerTile"]`)
+          )
+            continue
           const r = el.getBoundingClientRect()
           if (r.width === 0 && r.height === 0) continue
           if (r.right > vw + 1 || r.left < -1) {
@@ -116,12 +121,11 @@ test.describe('Summit 2027 — responsive', () => {
   test('the multi-column grids step down with the viewport', async ({ page }) => {
     await open(page, 1440)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(4)
-    expect(await columnCount(page, mod('logoGrid'))).toBe(4)
+    expect(await columnCount(page, mod('logoGrid'))).toBe(5)
     expect(await columnCount(page, mod('newsGrid'))).toBe(3)
     expect(await columnCount(page, mod('quoteGrid'))).toBe(2)
     expect(await columnCount(page, mod('footerGrid'))).toBe(4)
     expect(await columnCount(page, mod('exhibitionGrid'))).toBe(2)
-    expect(await columnCount(page, mod('dialogueInner'))).toBe(2)
 
     await open(page, 1024)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(3)
@@ -134,7 +138,6 @@ test.describe('Summit 2027 — responsive', () => {
     expect(await columnCount(page, mod('newsGrid'))).toBe(2)
     expect(await columnCount(page, mod('quoteGrid'))).toBe(1)
     expect(await columnCount(page, mod('exhibitionGrid'))).toBe(1)
-    expect(await columnCount(page, mod('dialogueInner'))).toBe(1)
 
     await open(page, 390)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(2)
@@ -143,37 +146,25 @@ test.describe('Summit 2027 — responsive', () => {
     expect(await columnCount(page, mod('footerGrid'))).toBe(2)
   })
 
-  test('the part rows stack on a phone instead of squeezing four columns', async ({ page }) => {
-    await open(page, 1440)
-    expect(await columnCount(page, mod('partRow'))).toBe(4)
-    const wide = await page.locator(mod('partRow')).first().boundingBox()
-
-    await open(page, 390)
-    expect(await columnCount(page, mod('partRow'))).toBe(1)
-    // Stacked, a row is much taller than its one-line desktop form.
-    const narrow = await page.locator(mod('partRow')).first().boundingBox()
-    expect(narrow!.height).toBeGreaterThan(wide!.height * 1.6)
-  })
-
   /*
    * The design pins the mark to the viewport's right edge, not to the content
    * column: at 1440 its glyph sits at x 845–1258 with the canvas running off
    * the page. On a phone it moves behind the copy, still bleeding right.
    */
-  test('the hero mark is anchored to the viewport edge', async ({ page }) => {
+  test('the hero mark is anchored to the viewport edge, and dropped on a phone', async ({
+    page,
+  }) => {
     await open(page, 1440)
-    const img = page.locator(mod('heroMark')).locator('img')
-    let box = await img.boundingBox()
+    const mark = page.locator(mod('heroMark'))
+    const img = mark.locator('img')
+    const box = await img.boundingBox()
     expect(box!.x + box!.width).toBeGreaterThanOrEqual(1440)
     expect(Math.round(box!.width)).toBe(825)
     expect(Math.round(box!.x)).toBe(617)
 
     await open(page, 375)
-    box = await img.boundingBox()
-    expect(box!.x + box!.width).toBeGreaterThan(375)
-    // The hero itself clips it, so the page does not scroll sideways.
-    const hero = page.locator('#top')
-    await expect(hero).toHaveCSS('overflow', 'hidden')
+    // It competes with the copy at this width, so the mark is hidden outright.
+    await expect(mark).toBeHidden()
   })
 
   test('the section links become full-width buttons on a phone', async ({ page }) => {

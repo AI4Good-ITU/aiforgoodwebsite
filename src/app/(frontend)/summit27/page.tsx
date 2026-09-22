@@ -6,10 +6,25 @@ import theme from '@/styles/theme.module.css'
 import SummitClient from './SummitClient'
 import { avenir } from './fonts'
 
+const TITLE = "AI for Good Summit 2027 - Unlock AI's potential to serve humanity"
+const DESCRIPTION =
+  'The AI for Good Global Summit 2026, led by ITU, aims to unlock AI’s potential to serve humanity through building skills and standards, and advancing partnerships to solve global challenges.'
+const OG_IMAGE = '/img/summit27-og.jpg'
+
 export const metadata: Metadata = {
-  title: 'AI for Good Global Summit 2027',
-  description:
-    'The AI for Good Global Summit returns to Palexpo, Geneva, 7–10 July 2027. 1,000+ speakers, 200+ exhibitors and 50+ UN agencies.',
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [{ url: OG_IMAGE, width: 1920, height: 1080 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [OG_IMAGE],
+  },
 }
 
 export default function Summit27Page() {

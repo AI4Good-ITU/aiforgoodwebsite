@@ -9,7 +9,7 @@
 import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
 import styles from './summit.module.css'
-import { Button, Eyebrow, SidePanel, Toast } from '@/components/ui'
+import { Button, Eyebrow, SidePanel } from '@/components/ui'
 import { useReveal, useScrollChrome } from './motion'
 import { SocialIcon } from './SocialIcon'
 import {
@@ -19,12 +19,12 @@ import {
   LINKS,
   NAV_LINKS,
   NEWS,
-  PARTS,
   SPEAKERS,
   SOCIALS,
   SPONSOR_TIERS,
   TESTIMONIALS,
   TICKER_ITEMS,
+  UN_PARTNERS,
 } from './data'
 
 /** One pass of the ticker, with an accent dot after each item. */
@@ -38,6 +38,27 @@ function TickerRun({ ariaHidden = false }: { ariaHidden?: boolean }) {
             ●
           </span>
         </React.Fragment>
+      ))}
+    </div>
+  )
+}
+
+/** One pass of the UN partners marquee. */
+function PartnerRun({ ariaHidden = false }: { ariaHidden?: boolean }) {
+  return (
+    <div className={styles.partnersRun} aria-hidden={ariaHidden || undefined}>
+      {UN_PARTNERS.map((p) => (
+        <a
+          key={p.name}
+          href={p.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.partnerTile}
+          aria-label={p.name}
+          tabIndex={ariaHidden ? -1 : undefined}
+        >
+          <img src={p.src} alt={p.name} loading="lazy" />
+        </a>
       ))}
     </div>
   )
@@ -149,7 +170,6 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
   const theme = useSyncExternalStore(themeStore.subscribe, themeStore.get, () => null)
   const system = useSyncExternalStore(subscribeSystem, getSystem, () => 'light' as Theme)
   const effectiveTheme = theme ?? system
-  const [toast, setToast] = useState<string | null>(null)
   /*
    * SidePanel portals into this instead of document.body, so the panel stays
    * inside the themed subtree. Held in state rather than read off the ref
@@ -157,9 +177,14 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
    */
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null)
 
+  const [newsletterOpen, setNewsletterOpen] = useState(false)
+  const [newsletterStatus, setNewsletterStatus] = useState<
+    'idle' | 'submitting' | 'success' | 'error'
+  >('idle')
+  const [newsletterError, setNewsletterError] = useState<string | null>(null)
+
   const rootRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const shrunk = useScrollChrome(progressRef)
   useReveal(rootRef, styles.shown)
@@ -168,24 +193,37 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
 
   const toggleTheme = () => themeStore.set(effectiveTheme === 'dark' ? 'light' : 'dark')
 
-  useEffect(() => () => void (toastTimer.current && clearTimeout(toastTimer.current)), [])
+  const onNewsletterOpenChange = useCallback((open: boolean) => {
+    setNewsletterOpen(open)
+    if (!open) {
+      setNewsletterStatus('idle')
+      setNewsletterError(null)
+    }
+  }, [])
 
-  /*
-   * Destinations marked data-page have no page yet, so intercept the click and
-   * say so rather than navigating nowhere. Everything else is a real link.
-   */
-  const onRootClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const hit = (e.target as HTMLElement).closest('[data-page]')
-    if (!hit) return
+  const onNewsletterSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setToast(hit.getAttribute('data-page'))
-    if (toastTimer.current) clearTimeout(toastTimer.current)
-    toastTimer.current = setTimeout(() => setToast(null), 2200)
+    const email = String(new FormData(e.currentTarget).get('email') ?? '')
+    setNewsletterStatus('submitting')
+    setNewsletterError(null)
+    try {
+      const res = await fetch('/api/summit27-newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = (await res.json().catch(() => null)) as { error?: string } | null
+      if (!res.ok) throw new Error(data?.error || 'Could not complete signup.')
+      setNewsletterStatus('success')
+    } catch (err) {
+      setNewsletterStatus('error')
+      setNewsletterError(err instanceof Error ? err.message : 'Could not complete signup.')
+    }
   }, [])
 
   return (
     <div className={themeClass}>
-      <div className={styles.root} ref={rootRef} onClick={onRootClick}>
+      <div className={styles.root} ref={rootRef}>
         {/* ── Nav ── */}
         <div className={`${styles.nav} ${shrunk ? styles.navShrunk : ''}`}>
           <div className={`${styles.shell} ${styles.navInner}`}>
@@ -241,7 +279,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
           <div className={`${styles.shell} ${styles.heroGrid}`}>
             <div className={styles.heroText}>
               <div className={styles.heroMeta}>
-                <span className={styles.heroDate}>7–10 July 2027</span>
+                <span className={styles.heroDate}>21–24 June 2027</span>
                 <span className={styles.heroMetaDot}>•</span>
                 <span className={styles.heroVenue}>Palexpo, Geneva</span>
               </div>
@@ -253,24 +291,23 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 <span className={styles.heroYear}>2027</span>
               </h1>
               <p className={styles.heroBody}>
-                Geneva has spent eighty years being the room where the world works things out. For
-                four days in July 2027, that room is full of artificial intelligence — the people
-                building it, the people governing it, and the people whose lives it changes.
+                As the leading United Nations (UN) platform on Artificial Intelligence (AI), the
+                Summit is organized by the International Telecommunication Union in partnership
+                with 53 UN partners and co-convened with the Government of Switzerland. The mission
+                of AI for Good is to unlock AI&rsquo;s potential to serve humanity. As a
+                multi-stakeholder platform, AI for Good identifies innovative AI applications to
+                solve global challenges, empowers people with the tools and knowledge to thrive in
+                the AI era, and explores the evolving role of emerging AI technologies and
+                standards in supporting policy frameworks and innovation.
               </p>
               <div className={styles.heroButtons}>
-                <span data-page="Pass waitlist">
-                  <Button size="xl" hierarchy="primary">
-                    Get first access to passes
-                  </Button>
-                </span>
-                <Button size="xl" hierarchy="secondary-gray" href={LINKS.sponsorshipOpportunities}>
+                <Button size="xl" hierarchy="primary" onClick={() => setNewsletterOpen(true)}>
+                  Sign up for updates
+                </Button>
+                <Button size="xl" hierarchy="secondary-gray" href={LINKS.becomeASponsor}>
                   Sponsorship opportunities
                 </Button>
               </div>
-              <p className={styles.heroFoot}>
-                Organized by ITU in partnership with over 50 UN sister agencies and co-convened with
-                the Government of Switzerland.
-              </p>
             </div>
           </div>
         </section>
@@ -283,41 +320,15 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
           </div>
         </div>
 
-        {/* ── Six parts ── */}
-        <section id="week" className={styles.section} style={{ background: 'var(--bg-2)' }}>
-          <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
-            <div className={styles.sectionHead}>
-              <div>
-                <Eyebrow>The week</Eyebrow>
-                <h2 className={styles.h2}>Six parts, one hall.</h2>
-              </div>
-            </div>
-            <div className={styles.partsList}>
-              {PARTS.map((part) => (
-                <div key={part.num} className={styles.partRow}>
-                  <span className={styles.partNum}>{part.num}</span>
-                  <span className={styles.partTitle}>{part.title}</span>
-                  <span className={styles.partDesc}>{part.desc}</span>
-                  <span className={styles.partAccess}>{part.access}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ── Speakers ── */}
         <section id="speakers" className={styles.section} style={{ background: 'var(--bg)' }}>
           <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
             <div className={styles.sectionHead}>
               <div>
                 <Eyebrow>Speakers</Eyebrow>
-                <h2 className={styles.h2}>Who takes the stage</h2>
+                <h2 className={styles.h2}>Explore the 2026 speakers</h2>
               </div>
             </div>
-            <p className={styles.lede}>
-              Heads of state, Nobel laureates, the researchers building frontier systems and the
-              people holding them to account.
-            </p>
             <div className={styles.speakerGrid}>
               {SPEAKERS.map((p) => (
                 <a
@@ -353,9 +364,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
               <Eyebrow>The exhibition</Eyebrow>
               <h2 className={styles.exhibitionTitle}>Two hundred stands you can actually touch.</h2>
               <p className={styles.exhibitionBody}>
-                Humanoid robots, brain-computer interfaces, autonomous systems, quantum
-                demonstrations and UN programmes deploying AI in the field. Open to every pass,
-                including Discovery.
+                Explore cutting-edge AI demos and experience the latest innovations firsthand.
               </p>
               <div className={styles.exhibitionActions}>
                 <Button size="lg" hierarchy="primary" href={LINKS.exhibitors2026}>
@@ -366,63 +375,30 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
           </div>
         </section>
 
-        {/* ── AI for Good band ── */}
-        <div id="about" className={styles.dialogue}>
-          <div
-            className={`${styles.shell} ${styles.dialogueInner} ${styles.reveal}`}
-            data-reveal="1"
-          >
-            <div className={styles.dialogueBody}>
-              <h2 className={styles.dialogueTitle}>
-                The United Nations’ leading platform on Artificial Intelligence.
-              </h2>
-              <p className={styles.dialogueSub}>
-                AI for Good is <strong>unlocking AI’s potential to serve humanity.</strong>
-              </p>
-              <p className={styles.dialogueText}>
-                AI for Good is organized by ITU in partnership with over 50 UN Sister Agencies and
-                co-convened with the Government of Switzerland.
-              </p>
-            </div>
-            <span className={styles.dialogueCta}>
-              <Button size="lg" hierarchy="on-band" href={LINKS.about}>
-                About us
-              </Button>
-            </span>
+        {/* ── UN partners ── */}
+        <section id="un-partners" className={styles.section} style={{ background: 'var(--bg)' }}>
+          <div className={`${styles.shell} ${styles.partnersHead} ${styles.reveal}`} data-reveal="1">
+            <Eyebrow>Partners</Eyebrow>
+            <h2 className={styles.h2}>53 UN Partners</h2>
           </div>
-        </div>
+          <div className={styles.partnersViewport}>
+            <div className={styles.partnersTrack}>
+              <PartnerRun />
+              <PartnerRun ariaHidden />
+            </div>
+          </div>
+        </section>
 
-        {/* ── Past sponsors ── */}
+        {/* ── Sponsors ── */}
         <section id="sponsors" className={styles.section} style={{ background: 'var(--bg-2)' }}>
           <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
-            <Eyebrow>Past sponsors</Eyebrow>
-            {SPONSOR_TIERS.map((tier) => (
-              <div key={tier.label} className={styles.tier}>
-                <span className={styles.tierLabel}>{tier.label}</span>
-                <div className={styles.logoGrid}>
-                  {tier.logos.map((l) => (
-                    <a
-                      key={`${tier.label}-${l.name}`}
-                      href={l.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.logoTile}
-                      aria-label={l.name}
-                    >
-                      <img src={l.src} alt={l.name} loading="lazy" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            ))}
-            <div className={styles.sponsorCta}>
-              <div className={styles.sponsorCopy}>
-                <div className={styles.sponsorTitle}>
-                  Put your brand in the room where AI policy and deployment meet.
-                </div>
-                <div className={styles.sponsorText}>
-                  200+ exhibition stands, live demos and the delegations setting the rules.
-                </div>
+            <div className={styles.sectionHead}>
+              <div>
+                <h2 className={styles.h2}>2026 Sponsors</h2>
+                <p className={styles.lede}>
+                  Want to help shape the future of AI for Good? Join early to secure the best
+                  slots. Now available, our 2027 Sponsorship &amp; Exhibition Brochure!
+                </p>
               </div>
               <span className={styles.sponsorBtn}>
                 <Button size="lg" hierarchy="primary" href={LINKS.becomeASponsor}>
@@ -430,6 +406,35 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 </Button>
               </span>
             </div>
+            {SPONSOR_TIERS.map((tier) => (
+              <div key={tier.label} className={styles.tier}>
+                <span className={styles.tierLabel}>{tier.label}</span>
+                <div className={styles.logoGrid}>
+                  {tier.logos.map((l) =>
+                    l.href ? (
+                      <a
+                        key={`${tier.label}-${l.name}`}
+                        href={l.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.logoTile}
+                        aria-label={l.name}
+                      >
+                        <img src={l.src} alt={l.name} loading="lazy" />
+                      </a>
+                    ) : (
+                      <div
+                        key={`${tier.label}-${l.name}`}
+                        className={styles.logoTile}
+                        aria-label={l.name}
+                      >
+                        <img src={l.src} alt={l.name} loading="lazy" />
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -482,7 +487,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
             <div className={styles.sectionHead}>
               <div>
                 <Eyebrow>Voices</Eyebrow>
-                <h2 className={styles.h2}>What they said on stage</h2>
+                <h2 className={styles.h2}>In their words</h2>
               </div>
             </div>
             <div className={styles.quoteGrid}>
@@ -588,8 +593,47 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
           </nav>
         </SidePanel>
 
-        {/* ── Toast ── */}
-        <Toast message={toast ? `${toast} — not built in this prototype` : null} />
+        {/* ── Newsletter signup ── */}
+        <SidePanel
+          open={newsletterOpen}
+          onOpenChange={onNewsletterOpenChange}
+          title="Sign up for updates"
+          subtitle="Get the news and pass alerts for Summit 2027, straight to your inbox."
+          container={portalContainer}
+        >
+          {newsletterStatus === 'success' ? (
+            <p className={styles.newsletterNote}>You&rsquo;re subscribed — thanks!</p>
+          ) : (
+            <form className={styles.newsletterForm} onSubmit={onNewsletterSubmit}>
+              <label className={styles.newsletterLabel} htmlFor="newsletter-email">
+                Email address
+              </label>
+              <input
+                id="newsletter-email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                className={styles.newsletterInput}
+                disabled={newsletterStatus === 'submitting'}
+              />
+              {newsletterError ? (
+                <p className={`${styles.newsletterNote} ${styles.newsletterNoteError}`}>
+                  {newsletterError}
+                </p>
+              ) : null}
+              <Button
+                type="submit"
+                size="lg"
+                hierarchy="primary"
+                fullWidth
+                disabled={newsletterStatus === 'submitting'}
+              >
+                {newsletterStatus === 'submitting' ? 'Signing up…' : 'Sign up'}
+              </Button>
+            </form>
+          )}
+        </SidePanel>
       </div>
     </div>
   )

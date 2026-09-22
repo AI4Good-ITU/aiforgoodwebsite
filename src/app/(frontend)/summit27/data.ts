@@ -10,58 +10,11 @@ export const ACCENT = '#fbd207'
 
 /** Destinations on the main AI for Good site. */
 export const LINKS = {
-  sponsorshipOpportunities: 'https://aiforgood.itu.int/engage/sponsor/',
   becomeASponsor: 'https://aiforgood.itu.int/sponsor/',
   exhibitors2026: 'https://aiforgood.itu.int/summit26/exhibitors/',
   about: 'https://aiforgood.itu.int/about-ai-for-good/',
   blog: 'https://aiforgood.itu.int/ai-for-good-blog/',
 } as const
-
-export type Part = {
-  num: string
-  title: string
-  desc: string
-  access: string
-}
-
-export const PARTS: Part[] = [
-  {
-    num: '01',
-    title: 'Centre Stage',
-    desc: 'Heads of state, laureates and the keynotes that set the agenda for the year.',
-    access: 'All passes',
-  },
-  {
-    num: '02',
-    title: 'Solutions Stage',
-    desc: 'Deployments that already work — health, climate, agriculture, disaster response.',
-    access: 'All passes',
-  },
-  {
-    num: '03',
-    title: 'Standards & governance',
-    desc: 'Working sessions with ITU, ISO and IEC, alongside the UN Global Dialogue.',
-    access: 'Delegates',
-  },
-  {
-    num: '04',
-    title: 'The exhibition',
-    desc: '200+ stands, live demos, humanoids and the Innovation Factory final.',
-    access: 'Open to all',
-  },
-  {
-    num: '05',
-    title: 'Youth Zone',
-    desc: 'A week-long programme and its own stage, for everyone aged 10 and up.',
-    access: 'Free',
-  },
-  {
-    num: '06',
-    title: 'Impact Awards & gala',
-    desc: 'The evening programme: film, AI art, awards and the invitation-only dinner.',
-    access: 'Leaders',
-  },
-]
 
 export type Speaker = {
   name: string
@@ -91,10 +44,10 @@ export const SPEAKERS: Speaker[] = [
     href: 'https://aiforgood.itu.int/speaker/h-e-ms-halla-tomasdottir/',
   },
   {
-    name: 'Maria Ressa',
-    role: 'Nobel Peace Prize Laureate; Co-Founder and CEO, Rappler',
-    img: '/img/speakers/maria-ressa.jpg',
-    href: 'https://aiforgood.itu.int/speaker/maria-ressa/',
+    name: 'H.E. Mr. Paul Kagame',
+    role: 'President, Republic of Rwanda',
+    img: '/img/speakers/h-e-mr-paul-kagame.jpg',
+    href: 'https://aiforgood.itu.int/speaker/h-e-mr-paul-kagame/',
   },
   {
     name: 'Björn Ulvaeus',
@@ -115,10 +68,10 @@ export const SPEAKERS: Speaker[] = [
     href: 'https://aiforgood.itu.int/speaker/puyr-tembe/',
   },
   {
-    name: 'John Legend',
-    role: 'Singer, Songwriter & Philanthropist',
-    img: '/img/speakers/john-legend.jpg',
-    href: 'https://aiforgood.itu.int/speaker/john-legend/',
+    name: 'Maria Ressa',
+    role: 'Nobel Peace Prize Laureate; Co-Founder and CEO, Rappler',
+    img: '/img/speakers/maria-ressa.jpg',
+    href: 'https://aiforgood.itu.int/speaker/maria-ressa/',
   },
   {
     name: 'Marc Benioff',
@@ -146,7 +99,68 @@ export const SPEAKERS: Speaker[] = [
   },
 ]
 
-export type Logo = { name: string; src: string; href: string }
+export type Logo = { name: string; src: string; href?: string }
+
+/** The UN agencies AI for Good partners with, as shown on aiforgood.itu.int/summit27. */
+export const UN_PARTNERS: Logo[] = [
+  { name: 'UNAIDS', src: '/img/un-partners/unaids.jpg', href: 'https://www.unaids.org/en' },
+  { name: 'World Bank', src: '/img/un-partners/world-bank.jpg', href: 'https://www.worldbank.org/' },
+  { name: 'WMO', src: '/img/un-partners/wmo.jpg', href: 'https://public.wmo.int/en' },
+  { name: 'WIPO', src: '/img/un-partners/wipo.jpg', href: 'https://www.wipo.int/portal/en/index.html' },
+  { name: 'WHO', src: '/img/un-partners/who.jpg', href: 'https://www.who.int/' },
+  { name: 'WFP', src: '/img/un-partners/wfp.jpg', href: 'https://www.wfp.org/' },
+  { name: 'UNWTO', src: '/img/un-partners/unwto.jpg', href: 'https://www.unwto.org/' },
+  { name: 'UNU', src: '/img/un-partners/unu.jpg', href: 'https://unu.edu/' },
+  { name: 'UNRISD', src: '/img/un-partners/unrisd.jpg', href: 'https://www.unrisd.org/' },
+  { name: 'CTBTO', src: '/img/un-partners/ctbto.png', href: 'https://www.ctbto.org/' },
+  { name: 'UNOOSA', src: '/img/un-partners/unoosa.jpg', href: 'https://www.unoosa.org/' },
+  { name: 'UNODC', src: '/img/un-partners/unodc.jpg', href: 'https://www.unodc.org/' },
+  { name: 'UNODA', src: '/img/un-partners/unoda.jpg', href: 'https://www.un.org/disarmament/' },
+  { name: 'UNITAR', src: '/img/un-partners/unitar.jpg', href: 'https://unitar.org/' },
+  { name: 'UNDRR', src: '/img/un-partners/undrr.png', href: 'https://www.undrr.org/' },
+  { name: 'UNIDO', src: '/img/un-partners/unido.jpg', href: 'https://www.unido.org/' },
+  { name: 'UNIDIR', src: '/img/un-partners/unidir.jpg', href: 'https://unidir.org/' },
+  { name: 'UNICRI', src: '/img/un-partners/unicri.jpg', href: 'http://www.unicri.it/' },
+  { name: 'UNHCR', src: '/img/un-partners/unhcr.jpg', href: 'https://www.unhcr.org/' },
+  { name: 'UN-Habitat', src: '/img/un-partners/un-habitat.jpg', href: 'https://unhabitat.org/' },
+  { name: 'UNFPA', src: '/img/un-partners/unfpa.jpg', href: 'https://www.unfpa.org/' },
+  { name: 'UNFCCC', src: '/img/un-partners/unfccc.jpg', href: 'https://unfccc.int/' },
+  { name: 'UNESCO', src: '/img/un-partners/unesco.jpg', href: 'https://en.unesco.org/' },
+  { name: 'UNEP', src: '/img/un-partners/unep.jpg', href: 'https://www.unep.org/' },
+  { name: 'UNECE', src: '/img/un-partners/unece.jpg', href: 'https://www.unece.org/info/ece-homepage.html' },
+  { name: 'UN DESA', src: '/img/un-partners/un-desa.jpg', href: 'https://www.un.org/en/desa' },
+  { name: 'UNCTAD', src: '/img/un-partners/unctad.jpg', href: 'https://unctad.org/' },
+  { name: 'UN Women', src: '/img/un-partners/un-women.jpg', href: 'https://www.unwomen.org/en' },
+  { name: 'IOM', src: '/img/un-partners/iom.jpg', href: 'https://www.iom.int/' },
+  { name: 'IMO', src: '/img/un-partners/imo.jpg', href: 'https://www.imo.org/en' },
+  { name: 'ILO', src: '/img/un-partners/ilo.png', href: 'https://www.ilo.org/global/lang--en/index.htm' },
+  { name: 'UN Global Pulse', src: '/img/un-partners/un-global-pulse.webp', href: 'https://www.unglobalpulse.org/' },
+  { name: 'FAO', src: '/img/un-partners/fao.png', href: 'http://www.fao.org/home/en/' },
+  { name: 'UN DPPA', src: '/img/un-partners/un-dppa.jpg', href: 'https://dppa.un.org/en' },
+  { name: 'UNOCHA', src: '/img/un-partners/unocha.webp', href: 'https://www.unocha.org/' },
+  { name: 'IAEA', src: '/img/un-partners/iaea.jpg', href: 'https://www.iaea.org/' },
+  { name: 'IMF', src: '/img/un-partners/imf.jpg', href: 'https://www.imf.org/' },
+  { name: 'IFAD', src: '/img/un-partners/ifad.png', href: 'https://www.ifad.org/en/' },
+  { name: 'ITC', src: '/img/un-partners/itc.png', href: 'https://www.intracen.org/' },
+  { name: 'ITU', src: '/img/un-partners/itu.jpg', href: 'https://www.itu.int/' },
+  { name: 'UNDP', src: '/img/un-partners/undp.jpg', href: 'https://www.undp.org/' },
+  { name: 'OHCHR', src: '/img/un-partners/ohchr.png', href: 'https://www.ohchr.org/' },
+  { name: 'UNCCD', src: '/img/un-partners/unccd.png', href: 'https://www.unccd.int/' },
+  { name: 'UNESCWA', src: '/img/un-partners/unescwa.png', href: 'https://www.unescwa.org/' },
+  { name: 'UN Global Compact', src: '/img/un-partners/un-global-compact.png', href: 'https://unglobalcompact.org/' },
+  { name: 'UNICC', src: '/img/un-partners/unicc.png', href: 'https://www.unicc.org/' },
+  { name: 'UNJSPF', src: '/img/un-partners/unjspf.png', href: 'https://www.unjspf.org/' },
+  { name: 'UNOCT', src: '/img/un-partners/unoct.png', href: 'https://www.un.org/counterterrorism/' },
+  { name: 'UNSSC', src: '/img/un-partners/unssc.jpg', href: 'https://www.unssc.org/' },
+  { name: 'UPU', src: '/img/un-partners/upu.png', href: 'https://www.upu.int/en/home' },
+  { name: 'WTO', src: '/img/un-partners/wto.png', href: 'https://www.wto.org/' },
+  {
+    name: 'UN Digital & Emerging Technologies',
+    src: '/img/un-partners/un-digital-emerging-tech.png',
+    href: 'https://www.un.org/digital-emerging-technologies/',
+  },
+  { name: 'Unite', src: '/img/un-partners/unite.png', href: 'https://unite.un.org/en' },
+]
 
 export type SponsorTier = { label: string; logos: Logo[] }
 
@@ -183,9 +197,14 @@ export const SPONSOR_TIERS: SponsorTier[] = [
       },
       {
         name: 'China Unicom',
-        src: '/img/sponsors/cuguplus.jpg',
+        src: '/img/sponsors/china-unicom.jpg',
         href: 'https://www.cuguplus.com/company',
       },
+    ],
+  },
+  {
+    label: 'Gold sponsors',
+    logos: [
       {
         name: 'Ministry of Science and ICT, Republic of Korea',
         src: '/img/sponsors/msit-korea.png',
@@ -202,7 +221,7 @@ export const SPONSOR_TIERS: SponsorTier[] = [
     ],
   },
   {
-    label: 'Gold sponsors',
+    label: 'Silver sponsors',
     logos: [
       {
         name: 'EY',
@@ -213,13 +232,13 @@ export const SPONSOR_TIERS: SponsorTier[] = [
     ],
   },
   {
-    label: 'Silver sponsors',
+    label: 'Youth Zone sponsors',
     logos: [{ name: 'LEGO', src: '/img/sponsors/lego.png', href: 'https://www.lego.com/' }],
   },
   {
-    label: 'Youth Zone sponsors',
+    label: 'Networking partners',
     logos: [
-      { name: 'Lenovo', src: '/img/sponsors/lenovo.jpg', href: 'https://www.lenovo.com/' },
+      { name: 'Lenovo', src: '/img/sponsors/lenovo.png', href: 'https://www.lenovo.com/us/en/' },
       { name: 'TikTok', src: '/img/sponsors/tiktok.png', href: 'https://www.tiktok.com/about' },
       { name: 'Giga', src: '/img/sponsors/giga.png', href: 'https://giga.global/' },
       {
@@ -228,11 +247,6 @@ export const SPONSOR_TIERS: SponsorTier[] = [
         href: 'https://humanchange.com/',
       },
       { name: 'Zurich', src: '/img/sponsors/zurich.png', href: 'https://www.zurich.com/' },
-    ],
-  },
-  {
-    label: 'Networking partners',
-    logos: [
       { name: 'HP', src: '/img/sponsors/hp.png', href: 'http://www.hp.com/' },
       { name: 'IBM', src: '/img/sponsors/ibm.png', href: 'https://www.ibm.com/' },
       {
@@ -240,29 +254,106 @@ export const SPONSOR_TIERS: SponsorTier[] = [
         src: '/img/sponsors/advancesolutions.png',
         href: 'https://www.advancesolutions.com/',
       },
-      { name: 'ACM', src: '/img/sponsors/acm.jpg', href: 'https://www.acm.org/' },
-      { name: 'D-Teach', src: '/img/sponsors/d-teach.jpg', href: 'https://d-teach.com/' },
+      { name: 'ACM', src: '/img/sponsors/acm.jpeg', href: 'https://www.acm.org/' },
+      { name: 'D-Teach', src: '/img/sponsors/d-teach.png', href: 'https://d-teach.com/' },
       {
         name: 'QAI Ventures',
         src: '/img/sponsors/qai-ventures.png',
         href: 'https://qai-ventures.com/',
       },
       { name: 'AWS', src: '/img/sponsors/aws.png', href: 'https://aws.amazon.com/' },
-      { name: 'Siemens', src: '/img/sponsors/siemens.png', href: 'https://www.siemens.com/' },
+      { name: 'Siemens', src: '/img/sponsors/siemens.png', href: 'https://www.siemens.com/en-gb/' },
       { name: 'UNDP', src: '/img/sponsors/undp.png', href: 'https://www.undp.org/' },
       {
         name: 'UK Mission to the United Nations in Geneva',
-        src: '/img/sponsors/gov.png',
+        src: '/img/sponsors/uk-mission.png',
         href: 'https://www.gov.uk/world/organisations/uk-mission-to-the-wto-un-and-other-international-organisations-geneva',
       },
+      { name: 'Google', src: '/img/sponsors/google.png', href: 'https://google.com/' },
+      {
+        name: 'Special Competitive Studies Project',
+        src: '/img/sponsors/scsp.png',
+        href: 'https://www.scsp.ai/',
+      },
+    ],
+  },
+  {
+    label: 'Session partners',
+    logos: [
+      { name: 'CAICT', src: '/img/sponsors/caict.jpg', href: 'https://www.caict.ac.cn/english/' },
+      { name: 'GTI', src: '/img/sponsors/gti.png', href: 'https://www.gtigroup.org/' },
+      { name: 'WIC', src: '/img/sponsors/wic.png', href: 'https://www.wicinternet.org/' },
+      { name: 'S&P Global', src: '/img/sponsors/sp-global.png', href: 'https://www.spglobal.com/en' },
+      {
+        name: 'AutonomousXMobility',
+        src: '/img/sponsors/autonomous-x-mobility.png',
+        href: 'https://aiforgood.itu.int/event/autonomous-x-mobility-the-global-congress-on-ai-powered-mobility/',
+      },
+      { name: 'Microsoft', src: '/img/sponsors/microsoft.jpg', href: 'https://www.microsoft.com/en-us/' },
+      { name: 'Cisco', src: '/img/sponsors/cisco.png', href: 'https://www.cisco.com/' },
+      {
+        name: 'Access Partnership',
+        src: '/img/sponsors/access-partnership.png',
+        href: 'https://accesspartnership.com/',
+      },
+      { name: 'FAB', src: '/img/sponsors/fab.jpg', href: 'https://fsab.sa.com/' },
+      { name: 'Eraneos', src: '/img/sponsors/eraneos.png', href: 'https://www.eraneos.com/' },
+      { name: 'EY', src: '/img/sponsors/ey.jpg', href: 'https://www.ey.com/en_gl/services/ai/platform' },
+      {
+        name: 'Zhejiang Lab',
+        src: '/img/sponsors/zhejiang-lab.png',
+        href: 'https://en.zhejianglab.com/',
+      },
+      { name: 'PixVerse', src: '/img/sponsors/pixverse.png', href: 'https://app.pixverse.ai/' },
+      { name: 'WYF', src: '/img/sponsors/wyf.jpeg' },
+      {
+        name: 'Huawei',
+        src: '/img/sponsors/huawei.png',
+        href: 'https://www.huawei.com/en/',
+      },
+    ],
+  },
+  {
+    label: 'Media partners',
+    logos: [
+      { name: 'AI Magazine', src: '/img/sponsors/ai-magazine.png', href: 'https://aimagazine.com/' },
+      { name: 'Devex', src: '/img/sponsors/devex.jpg', href: 'https://www.devex.com/' },
+      { name: 'Digitel Talk', src: '/img/sponsors/digitel-talk.png' },
+      { name: 'GZERO Media', src: '/img/sponsors/gzero-media.png', href: 'https://www.gzeromedia.com/' },
+      {
+        name: 'Knowledge Networks',
+        src: '/img/sponsors/knowledge-networks.jpg',
+        href: 'https://knowledgenetworks.org/',
+      },
+      { name: 'Léman Bleu', src: '/img/sponsors/leman-bleu.png', href: 'https://www.lemanbleu.ch/' },
+      {
+        name: 'Telecom Review Europe',
+        src: '/img/sponsors/telecom-review-europe.jpg',
+        href: 'https://www.telecomrevieweurope.com/',
+      },
+      {
+        name: 'The Mainstream',
+        src: '/img/sponsors/the-mainstream.jpeg',
+        href: 'https://themainstream.co.in/',
+      },
+    ],
+  },
+  {
+    label: 'Technology partners',
+    logos: [
+      { name: 'Dorier', src: '/img/sponsors/dorier.png', href: 'https://dorier-group.com/' },
+      { name: 'Interprefy', src: '/img/sponsors/interprefy.png', href: 'https://www.interprefy.com/' },
+      { name: 'Myonvent', src: '/img/sponsors/myonvent.png', href: 'https://myonvent.com/' },
+      { name: 'Polomarco', src: '/img/sponsors/polomarco.png', href: 'https://polomarco.ch/' },
+      { name: 'UFOTech', src: '/img/sponsors/ufotech.png', href: 'https://ufotech.com/aiforgood/voyages/' },
     ],
   },
 ]
 
 export const TICKER_ITEMS = [
-  '7–10 July 2027',
-  '1,000+ speakers',
-  '200+ exhibitors',
+  '21–24 June 2027',
+  '1,200+ speakers',
+  '250+ exhibitors',
   '50+ UN agencies',
   'Palexpo, Geneva',
 ]
@@ -376,9 +467,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     title: 'Engage',
     links: [
       { label: 'About us', href: LINKS.about },
-      // The live site's own placeholder anchor; the real sponsor page is used
-      // instead since the hero already links there under the same label.
-      { label: 'Sponsorship opportunities', href: LINKS.sponsorshipOpportunities },
+      { label: 'Sponsorship opportunities', href: LINKS.becomeASponsor },
     ],
   },
 ]
