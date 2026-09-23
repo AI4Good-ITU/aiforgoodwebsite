@@ -490,15 +490,11 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     ],
   },
   {
-    title: 'AI Standards & Policy',
+    title: 'AI Standards',
     links: [
       {
         label: 'AI Standards Exchange Database',
         href: 'https://aiforgood.itu.int/ai-standards-exchange/',
-      },
-      {
-        label: 'AI Policy Dialogue 2025',
-        href: 'https://aiforgood.itu.int/summit25/programme/?theme=ai-Policy-dialogue',
       },
       { label: 'UN AI Resource Hub', href: 'https://unaihub.aiforgood.itu.int/' },
     ],
