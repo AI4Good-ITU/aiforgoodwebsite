@@ -67,6 +67,29 @@ function PartnerRun({ ariaHidden = false }: { ariaHidden?: boolean }) {
   )
 }
 
+/** One pass of the 2026 exhibitors carousel. */
+function ExhibitorRun({ ariaHidden = false }: { ariaHidden?: boolean }) {
+  return (
+    <div className={styles.exhibitorsRun} aria-hidden={ariaHidden || undefined}>
+      {EXHIBITORS_2026.map((e) => (
+        <a
+          key={e.name}
+          href={e.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.exhibitorCard}
+          tabIndex={ariaHidden ? -1 : undefined}
+        >
+          <div className={styles.exhibitorImgWrap}>
+            <img className={styles.exhibitorImg} src={e.img} alt={e.name} loading="lazy" />
+          </div>
+          <div className={styles.exhibitorName}>{e.name}</div>
+        </a>
+      ))}
+    </div>
+  )
+}
+
 /** One sponsor tier's label and logo grid. */
 /** Desktop's logo grid is 5 columns wide, so anything past this is a second row. */
 const TIER_ROW_SIZE = 5
@@ -508,21 +531,11 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 </Button>
               </span>
             </div>
-            <div className={styles.exhibitorGrid}>
-              {EXHIBITORS_2026.map((e) => (
-                <a
-                  key={e.name}
-                  href={e.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.exhibitorCard}
-                >
-                  <div className={styles.exhibitorImgWrap}>
-                    <img className={styles.exhibitorImg} src={e.img} alt={e.name} loading="lazy" />
-                  </div>
-                  <div className={styles.exhibitorName}>{e.name}</div>
-                </a>
-              ))}
+            <div className={styles.exhibitorsViewport}>
+              <div className={styles.exhibitorsTrack}>
+                <ExhibitorRun />
+                <ExhibitorRun ariaHidden />
+              </div>
             </div>
             <a
               href={LINKS.exhibitors2026}

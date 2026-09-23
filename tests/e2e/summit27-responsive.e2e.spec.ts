@@ -58,7 +58,7 @@ test.describe('Summit 2027 — responsive', () => {
          * so the page still does not scroll; exempt them by name.
          */
         const exempt =
-          /__(heroWash|heroMark|footerMark|tickerTrack|tickerRun|tickerItem|tickerDot|partnersTrack|partnersRun|partnerTile|coverImg|venueScrim)\b/
+          /__(heroWash|heroMark|footerMark|tickerTrack|tickerRun|tickerItem|tickerDot|partnersTrack|partnersRun|partnerTile|exhibitorsTrack|exhibitorsRun|exhibitorCard|coverImg|venueScrim)\b/
 
         const past: string[] = []
         for (const el of document.querySelectorAll('body *')) {
@@ -67,7 +67,9 @@ test.describe('Summit 2027 — responsive', () => {
           const cls = typeof el.className === 'string' ? el.className : ''
           if (
             exempt.test(cls) ||
-            el.closest(`[class*="__heroMark"], [class*="__footerMark"], [class*="__partnerTile"]`)
+            el.closest(
+              `[class*="__heroMark"], [class*="__footerMark"], [class*="__partnerTile"], [class*="__exhibitorCard"]`,
+            )
           )
             continue
           const r = el.getBoundingClientRect()
@@ -121,7 +123,6 @@ test.describe('Summit 2027 — responsive', () => {
   test('the multi-column grids step down with the viewport', async ({ page }) => {
     await open(page, 1440)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(4)
-    expect(await columnCount(page, mod('exhibitorGrid'))).toBe(4)
     expect(await columnCount(page, mod('themeGrid'))).toBe(5)
     expect(await columnCount(page, mod('logoGrid'))).toBe(5)
     expect(await columnCount(page, mod('newsGrid'))).toBe(3)
@@ -136,7 +137,6 @@ test.describe('Summit 2027 — responsive', () => {
     await open(page, 768)
     // Speakers hold three across a tablet; they drop to two at 720.
     expect(await columnCount(page, mod('speakerGrid'))).toBe(3)
-    expect(await columnCount(page, mod('exhibitorGrid'))).toBe(3)
     expect(await columnCount(page, mod('themeGrid'))).toBe(3)
     expect(await columnCount(page, mod('logoGrid'))).toBe(3)
     expect(await columnCount(page, mod('newsGrid'))).toBe(2)
@@ -145,7 +145,6 @@ test.describe('Summit 2027 — responsive', () => {
 
     await open(page, 390)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(2)
-    expect(await columnCount(page, mod('exhibitorGrid'))).toBe(2)
     expect(await columnCount(page, mod('themeGrid'))).toBe(2)
     expect(await columnCount(page, mod('logoGrid'))).toBe(2)
     expect(await columnCount(page, mod('newsGrid'))).toBe(1)
