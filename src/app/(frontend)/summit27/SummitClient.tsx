@@ -437,6 +437,16 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
           <div className={`${styles.shell} ${styles.partnersHead} ${styles.reveal}`} data-reveal="1">
             <Eyebrow>Partners</Eyebrow>
             <h2 className={styles.h2}>53 UN Partners</h2>
+            <h3 className={styles.partnersSubhead}>
+              The United Nations&rsquo; leading platform on Artificial Intelligence.
+            </h3>
+            <p className={styles.partnersLede}>
+              <strong>AI for Good is unlocking AI&rsquo;s potential to serve humanity.</strong>
+            </p>
+            <p className={styles.partnersText}>
+              AI for Good is organized by ITU in partnership with over 50 UN partners and
+              co-convened with the Government of Switzerland.
+            </p>
           </div>
           <div className={styles.partnersViewport}>
             <div className={styles.partnersTrack}>
