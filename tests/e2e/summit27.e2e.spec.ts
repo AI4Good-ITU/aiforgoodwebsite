@@ -90,9 +90,43 @@ test.describe('Summit 2027', () => {
     expect(errors).toEqual([])
   })
 
-  test('speakers, articles and sponsors link out to aiforgood.itu.int', async ({ page }) => {
+  test('speakers, exhibitors and articles open the detail panel instead of navigating', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(URL)
+
+    const dialog = page.getByRole('dialog')
+
+    // A speaker card shows its bio in the panel, not a new tab.
+    const speakers = page.locator(mod('speaker'))
+    await expect(speakers.first()).toContainText('Secretary-General, ITU')
+    await speakers.first().click()
+    await expect(dialog).toBeVisible()
+    await expect(dialog).toContainText('Doreen Bogdan-Martin')
+    await expect(dialog).toContainText('Secretary-General, ITU')
+    await expect(dialog.locator('img')).toHaveAttribute(
+      'src',
+      '/img/speakers/doreen-bogdan-martin.jpg',
+    )
+    expect(page.url()).toBe(URL)
+    await page.keyboard.press('Escape')
+    await expect(dialog).toHaveCount(0)
+
+    // Same for an exhibitor card.
+    await page.locator(mod('exhibitorCard')).first().click()
+    await expect(dialog).toBeVisible()
+    await expect(dialog).toContainText('Aperobot')
+    await page.keyboard.press('Escape')
+    await expect(dialog).toHaveCount(0)
+
+    // Same for a news card — the aggregate "Read all articles" CTA still links out.
+    const posts = page.locator(mod('newsCard'))
+    await expect(posts.nth(0)).toContainText('21 September 2026')
+    await posts.nth(0).click()
+    await expect(dialog).toBeVisible()
+    await expect(dialog).toContainText('From bit flow to token flow')
+    await page.keyboard.press('Escape')
 
     const external = async (locator: ReturnType<Page['locator']>, pattern: RegExp) => {
       await expect(locator).toHaveAttribute('href', pattern)
@@ -100,27 +134,10 @@ test.describe('Summit 2027', () => {
       await expect(locator).toHaveAttribute('rel', /noopener/)
     }
 
-    // Every speaker card is a link to that speaker's page.
-    const speakers = page.locator(mod('speaker'))
-    await external(speakers.first(), /aiforgood\.itu\.int\/speaker\/doreen-bogdan-martin\//)
-    await external(speakers.last(), /aiforgood\.itu\.int\/speaker\/avye-couloute\//)
-    await expect(speakers.first()).toContainText('Secretary-General, ITU')
-
-    // Every exhibitor card is a link, and both "View all exhibitors" CTAs agree.
-    const exhibitors = page.locator(mod('exhibitorCard'))
-    await external(exhibitors.first(), /aiforgood\.itu\.int\/speaker\/aperobot\//)
-    await external(exhibitors.last(), /aiforgood\.itu\.int\/speaker\/wallbo-the-handwashing-robot-buddy\//)
     await external(
       page.getByRole('link', { name: 'View all exhibitors' }).first(),
       /summit26\/exhibitors\//,
     )
-
-    // The three posts, and the blog behind them.
-    const posts = page.locator(mod('newsCard'))
-    await external(posts.nth(0), /from-bit-flow-to-token-flow/)
-    await external(posts.nth(1), /from-plan-to-plate/)
-    await external(posts.nth(2), /ai-readiness-hackathon/)
-    await expect(posts.nth(0)).toContainText('21 September 2026')
     await external(page.getByRole('link', { name: /Read all articles/ }).first(), /ai-for-good-blog/)
 
     // Buttons that are really links.

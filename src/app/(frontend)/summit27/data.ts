@@ -20,6 +20,7 @@ export type Speaker = {
   name: string
   role: string
   img: string
+  description: string
   /** The speaker's page on aiforgood.itu.int. */
   href: string
 }
@@ -29,72 +30,84 @@ export const SPEAKERS: Speaker[] = [
     name: 'Doreen Bogdan-Martin',
     role: 'Secretary-General, ITU',
     img: '/img/speakers/doreen-bogdan-martin.jpg',
+    description: 'Doreen Bogdan-Martin took office as Secretary-General of the International Telecommunication Union (ITU) on 1 January 2023. Ms Bogdan-Martin was elected as ITU’s first-ever female Secretary-General by Member States at the Union’s Plenipotentiary Conference in Bucharest, Romania. Ms Bogdan-Martin was previously the…',
     href: 'https://aiforgood.itu.int/speaker/doreen-bogdan-martin/',
   },
   {
     name: 'H.E. Mr. Alar Karis',
     role: 'President, Republic of Estonia',
     img: '/img/speakers/h-e-mr-alar-karis.jpg',
+    description: 'President Alar Karis was born on 26 March 1958 in Tartu. President Karis graduated from the Estonian Agricultural Academy (now the Estonian University of Life Sciences) in 1981. He earned a Master of Science degree in parasitology in 1987, with his later research focussing on molecular genetics and developmental…',
     href: 'https://aiforgood.itu.int/speaker/h-e-mr-alar-karis/',
   },
   {
     name: 'H.E. Ms. Halla Tómasdóttir',
     role: 'President, Iceland',
     img: '/img/speakers/h-e-ms-halla-tomasdottir.jpg',
+    description: 'Halla Tómasdóttir took office as the 7th President of Iceland on 1 August 2024. A business leader and advocate for responsible leadership, she has a background in finance, higher education, and social change. She co-founded Auður Capital, a female-led investment firm, and led The B Team, a global nonprofit focused on…',
     href: 'https://aiforgood.itu.int/speaker/h-e-ms-halla-tomasdottir/',
   },
   {
     name: 'H.E. Mr. Paul Kagame',
     role: 'President, Republic of Rwanda',
     img: '/img/speakers/h-e-mr-paul-kagame.jpg',
+    description: 'Paul Kagame is the President of the Republic of Rwanda. He serves as the African Union (AU) Champion for Domestic Health Financing. President Kagame previously served as the Commonwealth Chair-in-Office for two years from 2022. He also Chaired the African Union from 2018 to 2019 as well as the East African Community…',
     href: 'https://aiforgood.itu.int/speaker/h-e-mr-paul-kagame/',
   },
   {
     name: 'Björn Ulvaeus',
     role: 'Co-founder of ABBA and President, CISAC',
     img: '/img/speakers/bjorn-ulvaeus.jpg',
+    description: 'Björn Ulvaeus is a Swedish songwriter, producer, entrepreneur and creators’ rights advocate. Best known as co-founder and member of ABBA, he has helped shape global music and entertainment for more than five decades. Together with his longtime collaborator Benny Andersson, he co-wrote some of the most successful songs…',
     href: 'https://aiforgood.itu.int/speaker/bjorn-ulvaeus/',
   },
   {
     name: 'Volker Türk',
     role: 'United Nations High Commissioner for Human Rights, OHCHR',
     img: '/img/speakers/volker-turk.jpg',
+    description: 'United Nations High Commissioner for Human Rights, OHCHR',
     href: 'https://aiforgood.itu.int/speaker/volker-turk/',
   },
   {
     name: 'Puyr Tembé',
     role: 'Former Secretary of Indigenous Peoples, Indigenous Leader',
     img: '/img/speakers/puyr-tembe.jpg',
+    description: 'Puyr Tembé is an Indigenous leader of the Tembé people from the Alto Rio Guamá Indigenous Territory in the Brazilian Amazon. Widely recognized for her advocacy of Indigenous rights, the protection of ancestral territories, and the preservation of traditional knowledge, she has become one of the most respected and…',
     href: 'https://aiforgood.itu.int/speaker/puyr-tembe/',
   },
   {
     name: 'Maria Ressa',
     role: 'Nobel Peace Prize Laureate; Co-Founder and CEO, Rappler',
     img: '/img/speakers/maria-ressa.jpg',
+    description: 'Maria Ressa co-founded Rappler, the top digital-only news site that is leading the fight for press freedom in the Philippines. As Rappler’s CEO, Maria has endured constant political harassment and arrests by the Duterte government, forced to post bail eleven times to stay free. Rappler’s battle for truth and democracy…',
     href: 'https://aiforgood.itu.int/speaker/maria-ressa/',
   },
   {
     name: 'Marc Benioff',
     role: 'Chair & CEO, Salesforce',
     img: '/img/speakers/marc-benioff.jpg',
+    description: 'Chair & CEO, Salesforce',
     href: 'https://aiforgood.itu.int/speaker/marc-benioff/',
   },
   {
     name: 'Yoshua Bengio',
     role: 'Professor; Founder and Scientific Advisor; Co-President, Université de Montréal; Mila; LawZero',
     img: '/img/speakers/yoshua-bengio.jpg',
+    description: 'Yoshua Bengio is Full Professor of Computer Science at Université de Montreal, Co-President and Scientific Director of LawZero, as well as the Founder and Scientific Advisor of Mila. He also holds a Canada CIFAR AI Chair. Considered one of the world’s leaders in Artificial Intelligence and Deep Learning, he is the…',
     href: 'https://aiforgood.itu.int/speaker/yoshua-bengio/',
   },
   {
     name: 'Wang Jian',
     role: 'Founder of Alibaba Cloud, Director, Zhejiang Lab',
     img: '/img/speakers/wang-jian.jpg',
+    description: 'Dr. Jian Wang is an Academician of the Chinese Academy of Engineering, Director of Zhejiang Lab, and Founder of Alibaba Cloud. The Cloud ranks third as a public cloud provider globally and first in Asia. He was also the chief architect of Apsara, its computing foundation, and took the lead in proposing the industrial…',
     href: 'https://aiforgood.itu.int/speaker/wang-jian/',
   },
   {
     name: 'Avye Couloute',
     role: 'Founder, Girls Into Coding',
     img: '/img/speakers/avye-couloute.jpg',
+    description: 'Avye Couloute is the 18-year-old Founder of Girls Into Coding, a UK organisation she started at age 10 after noticing that most of the young people at the tech workshops she was running were boys. Eight years on, Girls Into Coding has reached 20,000+ girls across the UK through free hands-on workshops in coding,…',
     href: 'https://aiforgood.itu.int/speaker/avye-couloute/',
   },
 ]
@@ -102,6 +115,7 @@ export const SPEAKERS: Speaker[] = [
 export type Exhibitor = {
   name: string
   img: string
+  description: string
   /** The exhibitor's page on aiforgood.itu.int. */
   href: string
 }
@@ -111,41 +125,49 @@ export const EXHIBITORS_2026: Exhibitor[] = [
   {
     name: 'Aperobot',
     img: '/img/exhibitors/aperobot.jpg',
+    description: 'Workshop 4.0, the Haute Ecole d’Ingénierie (HEI) and Les Celliers de Sion have developed the first robot capable of serving you a glass of Swiss wine. This new robot was used for the first time at the 2020 Open Cellar Days in Valais. Since then, the robot has evolved considerably, with a linear and circular axis…',
     href: 'https://aiforgood.itu.int/speaker/aperobot/',
   },
   {
     name: 'Jupiter',
     img: '/img/exhibitors/jupiter.jpg',
+    description: 'Zeroth Jupiter is a humanoid robot designed for versatile real-world applications. It supports both teleoperation and autonomous modes, adapting seamlessly to different task requirements and balancing human-robot collaboration with independent operation. Jupiter targets the emerging need for human-scaled robots in…',
     href: 'https://aiforgood.itu.int/speaker/jupiter/',
   },
   {
     name: 'Live Biosonification Performance',
     img: '/img/exhibitors/live-biosonification-performance.png',
+    description: 'In this live demonstration, plants and fungi generate music and movement in real time using their own bio‑electrical signals. Electrodes placed on the organism detect tiny fluctuations in conductivity caused by changes in water movement, ionic concentration, and environmental stimuli. These signals are translated into…',
     href: 'https://aiforgood.itu.int/speaker/live-biosonification-performance/',
   },
   {
     name: 'N1',
     img: '/img/exhibitors/n1.jpeg',
+    description: 'N1 is the first home robot that truly enters your home—and your heart, featuring an innovative ultra-compact design that is easy to store, easy to move, and built to blend naturally into the home environment, a first-of-its-kind heterogeneous arm system with a telescopic arm + cable-driven arm delivering high…',
     href: 'https://aiforgood.itu.int/speaker/n1/',
   },
   {
     name: 'Roboclette',
     img: '/img/exhibitors/roboclette.jpg',
+    description: 'A true emblem of Valais genius, Roboclette is the first machine in the world capable of scraping melted cheese. Starting from a joint idea between Emmanuel Pignat, Sylvain Calinon and Nicolas Fontaine, the idea was made concrete by the development of Roboclette at the Idiap Research Institute. The success of…',
     href: 'https://aiforgood.itu.int/speaker/roboclette/',
   },
   {
     name: 'uMe',
     img: '/img/exhibitors/ume.jpg',
+    description: 'uMe by United Robotics Group helps students experience humanoid robotics in a practical, intuitive, and engaging way. Instead of only learning from theory, students can interact directly with a humanoid robot, observe its behavior, and understand how humans and robots can work together. This makes robotics more…',
     href: 'https://aiforgood.itu.int/speaker/ume/',
   },
   {
     name: 'Unitree G1',
     img: '/img/exhibitors/unitree-g1.jpg',
+    description: 'Unitree’s embodied AI robots integrate advanced motion control, multimodal perception and deep learning to operate reliably across industrial, home and entertainment scenarios. They deliver stable locomotion, precise manipulation and adaptive interaction, supporting industrial inspection, logistics, home assistance…',
     href: 'https://aiforgood.itu.int/speaker/unitree-g1/',
   },
   {
     name: 'WallBo',
     img: '/img/exhibitors/wallbo.jpg',
+    description: 'Washing hands properly is one of the best ways to stop the spread of illness, but getting young children to do it thoroughly can be a real challenge. Standard reminders like posters and signage often fail to hold children’s attention over time. That is where WallBo comes in a friendly, portable robot buddy designed to…',
     href: 'https://aiforgood.itu.int/speaker/wallbo-the-handwashing-robot-buddy/',
   },
 ]
@@ -429,7 +451,15 @@ export const TICKER_ITEMS = [
   'Palexpo, Geneva',
 ]
 
-export type Article = { tag: string; dot: string; title: string; date: string; href: string }
+export type Article = {
+  tag: string
+  dot: string
+  title: string
+  date: string
+  img: string
+  description: string
+  href: string
+}
 
 /** The three most recent posts from the AI for Good blog. */
 export const NEWS: Article[] = [
@@ -439,6 +469,8 @@ export const NEWS: Article[] = [
     title:
       'From bit flow to token flow: China Telecom’s blueprint for talking to machines that think',
     date: '21 September 2026',
+    img: '/img/news/bit-flow-to-token-flow.jpg',
+    description: 'For decades, the receiver has been the passive side of communication. Initially, it was a simple speaker with no intelligence. As digital technology improved, it gained a screen and a decoder, but the end user of information remained a person. With the advent of 6G, this changes: the listener at the receiving end…',
     href: 'https://aiforgood.itu.int/from-bit-flow-to-token-flow-china-telecoms-blueprint-for-talking-to-machines-that-think/',
   },
   {
@@ -446,6 +478,8 @@ export const NEWS: Article[] = [
     dot: 'var(--dot-summit)',
     title: 'From plan to plate: Connecting production decisions with material use',
     date: '18 September 2026',
+    img: '/img/news/plan-to-plate.jpg',
+    description: 'Every day, in large factories that manufacture heavy machinery such as excavators and bulldozers, planners decide which parts to produce together. But that decision, taken without considering the downstream process, can prove costly. Speaking during the session “From Plan to Plate: AI that Designs Out Waste” at the…',
     href: 'https://aiforgood.itu.int/from-plan-to-plate-connecting-production-decisions-with-material-use/',
   },
   {
@@ -453,6 +487,8 @@ export const NEWS: Article[] = [
     dot: 'var(--dot-standards)',
     title: 'The ITU AI Readiness Hackathon names four winning solutions in Riyadh',
     date: '15 September 2026',
+    img: '/img/news/ai-readiness-hackathon.jpg',
+    description: 'From financial regulation and clinical safety to agricultural protection, a range of responsible AI principles can be translated into practical, locally grounded solutions. In Riyadh, innovators put responsible AI into action at the ITU AI Readiness Hackathon 2026, transforming complex governance and readiness…',
     href: 'https://aiforgood.itu.int/the-itu-ai-readiness-hackathon-names-four-winning-solutions-in-riyadh/',
   },
 ]

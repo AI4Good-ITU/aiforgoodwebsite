@@ -481,7 +481,15 @@
 
 .speaker {
   display: block;
+  width: 100%;
   color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   /* A grid item stretches to its row; hug the content so a neighbour's
      two-line role does not push this card's text down. */
   align-self: start;
@@ -569,6 +577,13 @@
   width: 280px;
   display: block;
   color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   scroll-snap-align: start;
 }
 
@@ -955,8 +970,18 @@
 
 .newsCard {
   display: block;
+  width: 100%;
   border-top: 1px solid var(--line);
-  padding-top: 26px;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  padding: 26px 0 0;
+  margin: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
   transition: border-color 0.3s ease;
 }
 
@@ -1267,6 +1292,28 @@
 
 .newsletterNoteError {
   color: #c0392b;
+}
+
+/* ── Speaker / exhibitor / article detail panel ───────────── */
+
+.detailPanel {
+  margin-top: 20px;
+}
+
+.detailImage {
+  display: block;
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  object-fit: cover;
+  background: var(--bg-3);
+}
+
+.detailDescription {
+  margin-top: 20px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-2);
 }
 
 /* ── Keyframes ─────────────────────────────────────────────── */

@@ -256,6 +256,17 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
 
   const [sponsorsExpanded, setSponsorsExpanded] = useState(false)
 
+  /*
+   * Speakers, exhibitors and news all open the same right-hand panel with
+   * their picture, title and description, instead of leaving the page.
+   */
+  const [detailItem, setDetailItem] = useState<{
+    img: string
+    title: string
+    meta?: string
+    description: string
+  } | null>(null)
+
   const rootRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const exhibitorsTrackRef = useRef<HTMLDivElement>(null)
@@ -423,19 +434,25 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
             </div>
             <div className={styles.speakerGrid}>
               {SPEAKERS.map((p) => (
-                <a
+                <button
                   key={p.name}
-                  href={p.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  type="button"
                   className={styles.speaker}
+                  onClick={() =>
+                    setDetailItem({
+                      img: p.img,
+                      title: p.name,
+                      meta: p.role,
+                      description: p.description,
+                    })
+                  }
                 >
                   <div className={styles.speakerImgWrap}>
                     <img className={styles.speakerImg} src={p.img} alt={p.name} loading="lazy" />
                   </div>
                   <div className={styles.speakerName}>{p.name}</div>
                   <div className={styles.speakerRole}>{p.role}</div>
-                </a>
+                </button>
               ))}
             </div>
           </div>
@@ -521,12 +538,13 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
             <div className={styles.exhibitorsViewport}>
               <div className={styles.exhibitorsTrack} ref={exhibitorsTrackRef}>
                 {EXHIBITORS_2026.map((e) => (
-                  <a
+                  <button
                     key={e.name}
-                    href={e.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    type="button"
                     className={styles.exhibitorCard}
+                    onClick={() =>
+                      setDetailItem({ img: e.img, title: e.name, description: e.description })
+                    }
                   >
                     <div className={styles.exhibitorImgWrap}>
                       <img
@@ -540,7 +558,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                       </div>
                     </div>
                     <div className={styles.exhibitorNameMobile}>{e.name}</div>
-                  </a>
+                  </button>
                 ))}
               </div>
               <button
@@ -587,12 +605,18 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
             </div>
             <div className={styles.newsGrid}>
               {NEWS.map((n) => (
-                <a
+                <button
                   key={n.title}
-                  href={n.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  type="button"
                   className={styles.newsCard}
+                  onClick={() =>
+                    setDetailItem({
+                      img: n.img,
+                      title: n.title,
+                      meta: n.date,
+                      description: n.description,
+                    })
+                  }
                 >
                   <div className={styles.newsTag}>
                     <span className={styles.newsDot} style={{ background: n.dot }} />
@@ -600,7 +624,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                   </div>
                   <div className={styles.newsTitle}>{n.title}</div>
                   <div className={styles.newsDate}>{n.date}</div>
-                </a>
+                </button>
               ))}
             </div>
             <a
@@ -808,6 +832,22 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 {newsletterStatus === 'submitting' ? 'Signing up…' : 'Sign up'}
               </Button>
             </form>
+          )}
+        </SidePanel>
+
+        {/* ── Speaker / exhibitor / article detail ── */}
+        <SidePanel
+          open={detailItem !== null}
+          onOpenChange={(open) => !open && setDetailItem(null)}
+          title={detailItem?.title ?? ''}
+          subtitle={detailItem?.meta}
+          container={portalContainer}
+        >
+          {detailItem && (
+            <div className={styles.detailPanel}>
+              <img className={styles.detailImage} src={detailItem.img} alt="" />
+              <p className={styles.detailDescription}>{detailItem.description}</p>
+            </div>
           )}
         </SidePanel>
       </div>
