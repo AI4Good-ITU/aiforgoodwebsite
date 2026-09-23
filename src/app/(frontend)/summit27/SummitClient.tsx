@@ -336,10 +336,12 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 As the leading United Nations (UN) platform on Artificial Intelligence (AI), the
                 Summit is organized by the International Telecommunication Union in partnership
                 with 53 UN partners and co-convened with the Government of Switzerland. The mission
-                of AI for Good is to unlock AI&rsquo;s potential to serve humanity. As a
-                multi-stakeholder platform, AI for Good identifies innovative AI applications to
-                solve global challenges, empowers people with the tools and knowledge to thrive in
-                the AI era, and explores the evolving role of emerging AI technologies and
+                of AI for Good is to unlock AI&rsquo;s potential to serve humanity.
+              </p>
+              <p className={styles.heroBody}>
+                As a multi-stakeholder platform, AI for Good identifies innovative AI applications
+                to solve global challenges, empowers people with the tools and knowledge to thrive
+                in the AI era, and explores the evolving role of emerging AI technologies and
                 standards in supporting policy frameworks and innovation.
               </p>
               <div className={styles.heroButtons}>
