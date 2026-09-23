@@ -190,7 +190,8 @@ test.describe('Summit 2027 — responsive', () => {
     page,
   }) => {
     const networking = page.getByText('Networking partners')
-    const showMore = page.getByRole('button', { name: 'Show more' })
+    // Scoped to the section-level toggle — per-tier "Show more" buttons share the same name.
+    const showMore = page.locator(mod('sponsorShowMore'))
 
     await open(page, 1440)
     await expect(networking).toBeVisible()
@@ -204,6 +205,34 @@ test.describe('Summit 2027 — responsive', () => {
     await showMore.click()
     await expect(networking).toBeVisible()
     await expect(showMore).toBeHidden()
+  })
+
+  test('a long tier previews one row on desktop, expandable in place', async ({ page }) => {
+    await open(page, 1440)
+    const networkingHeading = page.getByText('Networking partners')
+    await networkingHeading.scrollIntoViewIfNeeded()
+    const tier = networkingHeading.locator('..')
+    const tierShowMore = tier.getByRole('button', { name: /Show more/ })
+
+    expect(await columnCount(page, mod('logoGrid'))).toBe(5)
+    // Networking has 17 logos; collapsed hides everything past the first row
+    // (still in the DOM — nth-child(n+6) is display:none, not removed).
+    const tiles = tier.locator(mod('logoTile'))
+    await expect(tiles).toHaveCount(17)
+    await expect(tiles.nth(4)).toBeVisible()
+    await expect(tiles.nth(5)).toBeHidden()
+    await expect(tierShowMore).toBeVisible()
+
+    await tierShowMore.click()
+    await expect(tiles.nth(5)).toBeVisible()
+    await expect(tiles.nth(16)).toBeVisible()
+    await expect(tier.getByRole('button', { name: 'Show less' })).toBeVisible()
+
+    // A short tier has nothing to collapse, so it carries no toggle at all.
+    const silverHeading = page.getByText('Silver sponsors')
+    const silverTier = silverHeading.locator('..')
+    await expect(silverTier.locator(mod('logoTile'))).toHaveCount(2)
+    await expect(silverTier.getByRole('button')).toHaveCount(0)
   })
 
   test('the hero keeps the wider inset the design gives it on a phone', async ({ page }) => {

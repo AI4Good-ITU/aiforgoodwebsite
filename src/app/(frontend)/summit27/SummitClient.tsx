@@ -67,11 +67,17 @@ function PartnerRun({ ariaHidden = false }: { ariaHidden?: boolean }) {
 }
 
 /** One sponsor tier's label and logo grid. */
+/** Desktop's logo grid is 5 columns wide, so anything past this is a second row. */
+const TIER_ROW_SIZE = 5
+
 function SponsorTierRow({ tier }: { tier: SponsorTier }) {
+  const [expanded, setExpanded] = useState(false)
+  const hasMore = tier.logos.length > TIER_ROW_SIZE
+
   return (
     <div className={styles.tier}>
       <span className={styles.tierLabel}>{tier.label}</span>
-      <div className={styles.logoGrid}>
+      <div className={`${styles.logoGrid} ${expanded ? styles.logoGridExpanded : ''}`}>
         {tier.logos.map((l) =>
           l.href ? (
             <a
@@ -91,6 +97,15 @@ function SponsorTierRow({ tier }: { tier: SponsorTier }) {
           ),
         )}
       </div>
+      {hasMore && (
+        <button
+          type="button"
+          className={styles.tierShowMore}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          {expanded ? 'Show less' : 'Show more'} <ChevronDown up={expanded} />
+        </button>
+      )}
     </div>
   )
 }
@@ -108,6 +123,30 @@ function Arrow() {
     >
       <path
         d="M1 7h14M10 1.5 15.5 7 10 12.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
+  )
+}
+
+/** Points down at rest; the caller rotates it to point up when expanded. */
+function ChevronDown({ up = false }: { up?: boolean }) {
+  return (
+    <svg
+      className={styles.chevron}
+      style={up ? { transform: 'rotate(180deg)' } : undefined}
+      width="14"
+      height="8"
+      viewBox="0 0 14 8"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M1 1l6 6 6-6"
         stroke="currentColor"
         strokeWidth="1.6"
         strokeLinecap="round"
