@@ -80,8 +80,7 @@ test.describe('Summit 2027', () => {
     await expect(page.locator(mod('logoTile'))).toHaveCount(62)
     // Duplicated for the seamless marquee loop: 53 real + 53 aria-hidden clones.
     await expect(page.locator(mod('partnerTile'))).toHaveCount(106)
-    // Duplicated for the seamless marquee loop: 8 real + 8 aria-hidden clones.
-    await expect(page.locator(mod('exhibitorCard'))).toHaveCount(16)
+    await expect(page.locator(mod('exhibitorCard'))).toHaveCount(8)
     await expect(page.locator(mod('newsCard'))).toHaveCount(3)
     await expect(page.locator(mod('quote'))).toHaveCount(4)
 

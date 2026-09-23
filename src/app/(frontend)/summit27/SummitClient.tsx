@@ -67,29 +67,6 @@ function PartnerRun({ ariaHidden = false }: { ariaHidden?: boolean }) {
   )
 }
 
-/** One pass of the 2026 exhibitors carousel. */
-function ExhibitorRun({ ariaHidden = false }: { ariaHidden?: boolean }) {
-  return (
-    <div className={styles.exhibitorsRun} aria-hidden={ariaHidden || undefined}>
-      {EXHIBITORS_2026.map((e) => (
-        <a
-          key={e.name}
-          href={e.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.exhibitorCard}
-          tabIndex={ariaHidden ? -1 : undefined}
-        >
-          <div className={styles.exhibitorImgWrap}>
-            <img className={styles.exhibitorImg} src={e.img} alt={e.name} loading="lazy" />
-          </div>
-          <div className={styles.exhibitorName}>{e.name}</div>
-        </a>
-      ))}
-    </div>
-  )
-}
-
 /** One sponsor tier's label and logo grid. */
 /** Desktop's logo grid is 5 columns wide, so anything past this is a second row. */
 const TIER_ROW_SIZE = 5
@@ -281,9 +258,19 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
 
   const rootRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
+  const exhibitorsTrackRef = useRef<HTMLDivElement>(null)
 
   const shrunk = useScrollChrome(progressRef)
   useReveal(rootRef, styles.shown)
+
+  const scrollExhibitors = useCallback((direction: 1 | -1) => {
+    const track = exhibitorsTrackRef.current
+    const card = track?.querySelector('a')
+    if (!track || !card) return
+    const style = getComputedStyle(track)
+    const gap = parseFloat(style.columnGap || style.gap || '0')
+    track.scrollBy({ left: direction * (card.getBoundingClientRect().width + gap), behavior: 'smooth' })
+  }, [])
 
   useEffect(() => setPortalContainer(rootRef.current), [])
 
@@ -532,10 +519,46 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
               </span>
             </div>
             <div className={styles.exhibitorsViewport}>
-              <div className={styles.exhibitorsTrack}>
-                <ExhibitorRun />
-                <ExhibitorRun ariaHidden />
+              <div className={styles.exhibitorsTrack} ref={exhibitorsTrackRef}>
+                {EXHIBITORS_2026.map((e) => (
+                  <a
+                    key={e.name}
+                    href={e.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.exhibitorCard}
+                  >
+                    <div className={styles.exhibitorImgWrap}>
+                      <img
+                        className={styles.exhibitorImg}
+                        src={e.img}
+                        alt={e.name}
+                        loading="lazy"
+                      />
+                      <div className={styles.exhibitorOverlay}>
+                        <span className={styles.exhibitorOverlayName}>{e.name}</span>
+                      </div>
+                    </div>
+                    <div className={styles.exhibitorNameMobile}>{e.name}</div>
+                  </a>
+                ))}
               </div>
+              <button
+                type="button"
+                className={`${styles.exhibitorNav} ${styles.exhibitorNavPrev}`}
+                onClick={() => scrollExhibitors(-1)}
+                aria-label="Previous exhibitors"
+              >
+                <Arrow />
+              </button>
+              <button
+                type="button"
+                className={`${styles.exhibitorNav} ${styles.exhibitorNavNext}`}
+                onClick={() => scrollExhibitors(1)}
+                aria-label="Next exhibitors"
+              >
+                <Arrow />
+              </button>
             </div>
             <a
               href={LINKS.exhibitors2026}

@@ -55,10 +55,13 @@ test.describe('Summit 2027 — responsive', () => {
          * Decorative layers are deliberately larger than their frame — the
          * hero mark runs off the right edge by design, the wash bleeds, the
          * marquee is twice the page wide. Each sits inside a clipping parent,
-         * so the page still does not scroll; exempt them by name.
+         * so the page still does not scroll; exempt them by name. Exhibitor
+         * cards are a different case: a real `overflow-x: auto` carousel, so
+         * cards scrolled out of view still report their laid-out position —
+         * fine, since their own ancestor clips them, not the page.
          */
         const exempt =
-          /__(heroWash|heroMark|footerMark|tickerTrack|tickerRun|tickerItem|tickerDot|partnersTrack|partnersRun|partnerTile|exhibitorsTrack|exhibitorsRun|exhibitorCard|coverImg|venueScrim)\b/
+          /__(heroWash|heroMark|footerMark|tickerTrack|tickerRun|tickerItem|tickerDot|partnersTrack|partnersRun|partnerTile|coverImg|venueScrim)\b/
 
         const past: string[] = []
         for (const el of document.querySelectorAll('body *')) {
