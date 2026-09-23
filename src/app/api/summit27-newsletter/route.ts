@@ -44,7 +44,17 @@ export async function POST(request: Request) {
   if (!memberRes.ok) {
     const detail = await memberRes.text()
     console.error(`summit27-newsletter: Mailchimp member PUT ${memberRes.status}`, detail)
-    return Response.json({ error: 'Could not complete signup.' }, { status: 502 })
+    let title: string | undefined
+    try {
+      title = (JSON.parse(detail) as { title?: string }).title
+    } catch {
+      // Non-JSON body from Mailchimp; fall through to the generic message.
+    }
+    const error =
+      title === 'Member Exists'
+        ? 'You’re already signed up with that email.'
+        : 'Could not complete signup. Please try again later.'
+    return Response.json({ error }, { status: 502 })
   }
 
   const tagRes = await fetch(`${memberUrl}/tags`, {
