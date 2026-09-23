@@ -442,7 +442,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 Explore AI innovations with real world impact
               </h2>
               <p className={styles.exhibitionBody}>
-                Explore cutting-edge AI demos and experience the latest innovations firsthand.
+                See cutting-edge AI demos and experience the latest innovations firsthand.
               </p>
               <div className={styles.exhibitionActions}>
                 <Button size="lg" hierarchy="primary" href={LINKS.exhibitors2026}>
