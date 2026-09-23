@@ -375,17 +375,11 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 The United Nations&rsquo; leading platform on Artificial Intelligence.
               </h3>
               <p className={styles.heroLede}>
-                <strong>AI for Good is unlocking AI&rsquo;s potential to serve humanity.</strong>
+                AI for Good is unlocking AI&rsquo;s potential to serve humanity.
               </p>
               <p className={styles.heroBody}>
                 AI for Good is organized by ITU in partnership with over 50 UN partners and
                 co-convened with the Government of Switzerland.
-              </p>
-              <p className={styles.heroBody}>
-                As a multi-stakeholder platform, AI for Good identifies innovative AI applications
-                to solve global challenges, empowers people with the tools and knowledge to thrive
-                in the AI era, and explores the evolving role of emerging AI technologies and
-                standards in supporting policy frameworks and innovation.
               </p>
               <div className={styles.heroButtons}>
                 <Button size="xl" hierarchy="primary" onClick={() => setNewsletterOpen(true)}>
