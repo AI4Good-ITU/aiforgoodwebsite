@@ -186,6 +186,26 @@ test.describe('Summit 2027 — responsive', () => {
     expect(Math.round(box!.width)).toBe(390 - 32)
   })
 
+  test('sponsor tiers past Youth Zone hide behind "Show more" on a phone only', async ({
+    page,
+  }) => {
+    const networking = page.getByText('Networking partners')
+    const showMore = page.getByRole('button', { name: 'Show more' })
+
+    await open(page, 1440)
+    await expect(networking).toBeVisible()
+    await expect(showMore).toBeHidden()
+
+    await open(page, 390)
+    await expect(networking).toBeHidden()
+    await showMore.scrollIntoViewIfNeeded()
+    await expect(showMore).toBeVisible()
+
+    await showMore.click()
+    await expect(networking).toBeVisible()
+    await expect(showMore).toBeHidden()
+  })
+
   test('the hero keeps the wider inset the design gives it on a phone', async ({ page }) => {
     await open(page, 375)
     const title = await page.locator('h1').boundingBox()

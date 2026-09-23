@@ -26,6 +26,7 @@ import {
   THEMES,
   TICKER_ITEMS,
   UN_PARTNERS,
+  type SponsorTier,
 } from './data'
 
 /** One pass of the ticker, with an accent dot after each item. */
@@ -61,6 +62,35 @@ function PartnerRun({ ariaHidden = false }: { ariaHidden?: boolean }) {
           <img src={p.src} alt={p.name} loading="lazy" />
         </a>
       ))}
+    </div>
+  )
+}
+
+/** One sponsor tier's label and logo grid. */
+function SponsorTierRow({ tier }: { tier: SponsorTier }) {
+  return (
+    <div className={styles.tier}>
+      <span className={styles.tierLabel}>{tier.label}</span>
+      <div className={styles.logoGrid}>
+        {tier.logos.map((l) =>
+          l.href ? (
+            <a
+              key={`${tier.label}-${l.name}`}
+              href={l.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.logoTile}
+              aria-label={l.name}
+            >
+              <img src={l.src} alt={l.name} loading="lazy" />
+            </a>
+          ) : (
+            <div key={`${tier.label}-${l.name}`} className={styles.logoTile} aria-label={l.name}>
+              <img src={l.src} alt={l.name} loading="lazy" />
+            </div>
+          ),
+        )}
+      </div>
     </div>
   )
 }
@@ -184,6 +214,8 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
   >('idle')
   const [newsletterError, setNewsletterError] = useState<string | null>(null)
 
+  const [sponsorsExpanded, setSponsorsExpanded] = useState(false)
+
   const rootRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
 
@@ -221,6 +253,15 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
       setNewsletterError(err instanceof Error ? err.message : 'Could not complete signup.')
     }
   }, [])
+
+  /*
+   * On a phone the tier list runs long, so only Co-convener through Youth
+   * Zone show by default; the rest sit behind "Show more". Desktop ignores
+   * this split entirely — see .sponsorExtra's media query.
+   */
+  const sponsorSplit = SPONSOR_TIERS.findIndex((t) => t.label === 'Youth Zone sponsors') + 1
+  const primarySponsorTiers = SPONSOR_TIERS.slice(0, sponsorSplit)
+  const extraSponsorTiers = SPONSOR_TIERS.slice(sponsorSplit)
 
   return (
     <div className={themeClass}>
@@ -350,6 +391,38 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
           </div>
         </section>
 
+        {/* ── UN partners ── */}
+        <section id="un-partners" className={styles.section} style={{ background: 'var(--bg-2)' }}>
+          <div className={`${styles.shell} ${styles.partnersHead} ${styles.reveal}`} data-reveal="1">
+            <Eyebrow>Partners</Eyebrow>
+            <h2 className={styles.h2}>53 UN Partners</h2>
+          </div>
+          <div className={styles.partnersViewport}>
+            <div className={styles.partnersTrack}>
+              <PartnerRun />
+              <PartnerRun ariaHidden />
+            </div>
+          </div>
+        </section>
+
+        {/* ── Topics ── */}
+        <section id="topics" className={styles.section} style={{ background: 'var(--bg)' }}>
+          <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
+            <Eyebrow>Programme</Eyebrow>
+            <h2 className={styles.h2}>Discover the 2026 Summit themes</h2>
+            <div className={styles.themeGrid}>
+              {THEMES.map((t) => (
+                <div key={t.title} className={styles.themeTile}>
+                  <div className={styles.themeImgWrap}>
+                    <img className={styles.themeImg} src={t.img} alt="" loading="lazy" />
+                    <div className={styles.themeTitle}>{t.title}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ── Exhibition ── */}
         <section id="exhibition" className={styles.section} style={{ background: 'var(--bg-2)' }}>
           <div className={styles.exhibitionGrid}>
@@ -373,69 +446,6 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 </Button>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* ── UN partners ── */}
-        <section id="un-partners" className={styles.section} style={{ background: 'var(--bg)' }}>
-          <div className={`${styles.shell} ${styles.partnersHead} ${styles.reveal}`} data-reveal="1">
-            <Eyebrow>Partners</Eyebrow>
-            <h2 className={styles.h2}>53 UN Partners</h2>
-          </div>
-          <div className={styles.partnersViewport}>
-            <div className={styles.partnersTrack}>
-              <PartnerRun />
-              <PartnerRun ariaHidden />
-            </div>
-          </div>
-        </section>
-
-        {/* ── Sponsors ── */}
-        <section id="sponsors" className={styles.section} style={{ background: 'var(--bg-2)' }}>
-          <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
-            <div className={styles.sectionHead}>
-              <div>
-                <h2 className={styles.h2}>2026 Sponsors</h2>
-                <p className={styles.lede}>
-                  Want to help shape the future of AI for Good? Join early to secure the best
-                  slots. Now available, our 2027 Sponsorship &amp; Exhibition Brochure!
-                </p>
-              </div>
-              <span className={styles.sponsorBtn}>
-                <Button size="lg" hierarchy="primary" href={LINKS.becomeASponsor}>
-                  Become a sponsor <Arrow />
-                </Button>
-              </span>
-            </div>
-            {SPONSOR_TIERS.map((tier) => (
-              <div key={tier.label} className={styles.tier}>
-                <span className={styles.tierLabel}>{tier.label}</span>
-                <div className={styles.logoGrid}>
-                  {tier.logos.map((l) =>
-                    l.href ? (
-                      <a
-                        key={`${tier.label}-${l.name}`}
-                        href={l.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.logoTile}
-                        aria-label={l.name}
-                      >
-                        <img src={l.src} alt={l.name} loading="lazy" />
-                      </a>
-                    ) : (
-                      <div
-                        key={`${tier.label}-${l.name}`}
-                        className={styles.logoTile}
-                        aria-label={l.name}
-                      >
-                        <img src={l.src} alt={l.name} loading="lazy" />
-                      </div>
-                    ),
-                  )}
-                </div>
-              </div>
-            ))}
           </div>
         </section>
 
@@ -482,24 +492,6 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
           </div>
         </section>
 
-        {/* ── Topics ── */}
-        <section id="topics" className={styles.section} style={{ background: 'var(--bg-2)' }}>
-          <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
-            <Eyebrow>Programme</Eyebrow>
-            <h2 className={styles.h2}>Discover the 2026 Summit themes</h2>
-            <div className={styles.themeGrid}>
-              {THEMES.map((t) => (
-                <div key={t.title} className={styles.themeTile}>
-                  <div className={styles.themeImgWrap}>
-                    <img className={styles.themeImg} src={t.img} alt="" loading="lazy" />
-                    <div className={styles.themeTitle}>{t.title}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ── Testimonials ── */}
         <section id="voices" className={`${styles.section} ${styles.closing}`}>
           <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
@@ -523,6 +515,49 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 </figure>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ── Sponsors ── */}
+        <section id="sponsors" className={styles.section} style={{ background: 'var(--bg-2)' }}>
+          <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
+            <div className={styles.sectionHead}>
+              <div>
+                <h2 className={styles.h2}>2026 Sponsors</h2>
+                <p className={styles.lede}>
+                  Want to help shape the future of AI for Good? Join early to secure the best
+                  slots. Now available, our 2027 Sponsorship &amp; Exhibition Brochure!
+                </p>
+              </div>
+              <span className={styles.sponsorBtn}>
+                <Button size="lg" hierarchy="primary" href={LINKS.becomeASponsor}>
+                  Become a sponsor <Arrow />
+                </Button>
+              </span>
+            </div>
+            {primarySponsorTiers.map((tier) => (
+              <SponsorTierRow key={tier.label} tier={tier} />
+            ))}
+            {extraSponsorTiers.length > 0 && (
+              <>
+                <div
+                  className={`${styles.sponsorExtra} ${sponsorsExpanded ? styles.sponsorExtraShown : ''}`}
+                >
+                  {extraSponsorTiers.map((tier) => (
+                    <SponsorTierRow key={tier.label} tier={tier} />
+                  ))}
+                </div>
+                {!sponsorsExpanded && (
+                  <button
+                    type="button"
+                    className={styles.sponsorShowMore}
+                    onClick={() => setSponsorsExpanded(true)}
+                  >
+                    Show more
+                  </button>
+                )}
+              </>
+            )}
           </div>
         </section>
 
