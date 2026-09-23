@@ -49,6 +49,7 @@ test.describe('Summit 2027', () => {
     for (const heading of [
       'Explore the 2026 speakers',
       'Explore AI innovations with real world impact',
+      'Discover the 2026 exhibitors',
       '53 UN Partners',
       '2026 Sponsors',
       'Newsroom',
@@ -63,6 +64,7 @@ test.describe('Summit 2027', () => {
       'top',
       'speakers',
       'exhibition',
+      'exhibitors-2026',
       'un-partners',
       'sponsors',
       'news',
@@ -78,6 +80,7 @@ test.describe('Summit 2027', () => {
     await expect(page.locator(mod('logoTile'))).toHaveCount(62)
     // Duplicated for the seamless marquee loop: 53 real + 53 aria-hidden clones.
     await expect(page.locator(mod('partnerTile'))).toHaveCount(106)
+    await expect(page.locator(mod('exhibitorCard'))).toHaveCount(8)
     await expect(page.locator(mod('newsCard'))).toHaveCount(3)
     await expect(page.locator(mod('quote'))).toHaveCount(4)
 
@@ -102,6 +105,15 @@ test.describe('Summit 2027', () => {
     await external(speakers.first(), /aiforgood\.itu\.int\/speaker\/doreen-bogdan-martin\//)
     await external(speakers.last(), /aiforgood\.itu\.int\/speaker\/avye-couloute\//)
     await expect(speakers.first()).toContainText('Secretary-General, ITU')
+
+    // Every exhibitor card is a link, and both "View all exhibitors" CTAs agree.
+    const exhibitors = page.locator(mod('exhibitorCard'))
+    await external(exhibitors.first(), /aiforgood\.itu\.int\/speaker\/aperobot\//)
+    await external(exhibitors.last(), /aiforgood\.itu\.int\/speaker\/wallbo-the-handwashing-robot-buddy\//)
+    await external(
+      page.getByRole('link', { name: 'View all exhibitors' }).first(),
+      /summit26\/exhibitors\//,
+    )
 
     // The three posts, and the blog behind them.
     const posts = page.locator(mod('newsCard'))

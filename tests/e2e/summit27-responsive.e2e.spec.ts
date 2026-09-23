@@ -121,6 +121,7 @@ test.describe('Summit 2027 — responsive', () => {
   test('the multi-column grids step down with the viewport', async ({ page }) => {
     await open(page, 1440)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(4)
+    expect(await columnCount(page, mod('exhibitorGrid'))).toBe(4)
     expect(await columnCount(page, mod('themeGrid'))).toBe(5)
     expect(await columnCount(page, mod('logoGrid'))).toBe(5)
     expect(await columnCount(page, mod('newsGrid'))).toBe(3)
@@ -135,6 +136,7 @@ test.describe('Summit 2027 — responsive', () => {
     await open(page, 768)
     // Speakers hold three across a tablet; they drop to two at 720.
     expect(await columnCount(page, mod('speakerGrid'))).toBe(3)
+    expect(await columnCount(page, mod('exhibitorGrid'))).toBe(3)
     expect(await columnCount(page, mod('themeGrid'))).toBe(3)
     expect(await columnCount(page, mod('logoGrid'))).toBe(3)
     expect(await columnCount(page, mod('newsGrid'))).toBe(2)
@@ -143,6 +145,7 @@ test.describe('Summit 2027 — responsive', () => {
 
     await open(page, 390)
     expect(await columnCount(page, mod('speakerGrid'))).toBe(2)
+    expect(await columnCount(page, mod('exhibitorGrid'))).toBe(2)
     expect(await columnCount(page, mod('themeGrid'))).toBe(2)
     expect(await columnCount(page, mod('logoGrid'))).toBe(2)
     expect(await columnCount(page, mod('newsGrid'))).toBe(1)
@@ -174,9 +177,11 @@ test.describe('Summit 2027 — responsive', () => {
     await open(page, 1440)
     await expect(page.locator(mod('moreLinkDesktop')).first()).toBeVisible()
     await expect(page.locator(mod('mobileCta')).first()).toBeHidden()
+    await expect(page.locator(mod('exhibitorsBtnDesktop'))).toBeVisible()
 
     await open(page, 390)
     await expect(page.locator(mod('moreLinkDesktop')).first()).toBeHidden()
+    await expect(page.locator(mod('exhibitorsBtnDesktop'))).toBeHidden()
     const cta = page.locator(mod('mobileCta')).first()
     await cta.scrollIntoViewIfNeeded()
     await expect(cta).toBeVisible()

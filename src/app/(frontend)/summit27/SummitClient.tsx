@@ -14,6 +14,7 @@ import { useReveal, useScrollChrome } from './motion'
 import { SocialIcon } from './SocialIcon'
 import {
   ACCENT,
+  EXHIBITORS_2026,
   FOOTER_COLUMNS,
   LEGAL_LINKS,
   LINKS,
@@ -487,6 +488,50 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 </Button>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ── 2026 Exhibitors ── */}
+        <section id="exhibitors-2026" className={styles.section} style={{ background: 'var(--bg)' }}>
+          <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
+            <div className={styles.sectionHead}>
+              <div>
+                <h2 className={styles.h2}>Discover the 2026 exhibitors</h2>
+                <p className={styles.lede}>
+                  Get ready to be inspired with our exciting range of exhibitors showcasing the
+                  latest AI breakthroughs and innovative solutions.
+                </p>
+              </div>
+              <span className={styles.exhibitorsBtnDesktop}>
+                <Button size="lg" hierarchy="primary" href={LINKS.exhibitors2026}>
+                  View all exhibitors
+                </Button>
+              </span>
+            </div>
+            <div className={styles.exhibitorGrid}>
+              {EXHIBITORS_2026.map((e) => (
+                <a
+                  key={e.name}
+                  href={e.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.exhibitorCard}
+                >
+                  <div className={styles.exhibitorImgWrap}>
+                    <img className={styles.exhibitorImg} src={e.img} alt={e.name} loading="lazy" />
+                  </div>
+                  <div className={styles.exhibitorName}>{e.name}</div>
+                </a>
+              ))}
+            </div>
+            <a
+              href={LINKS.exhibitors2026}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.mobileCta}
+            >
+              View all exhibitors
+            </a>
           </div>
         </section>
 

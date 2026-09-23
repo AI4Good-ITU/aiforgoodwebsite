@@ -99,6 +99,57 @@ export const SPEAKERS: Speaker[] = [
   },
 ]
 
+export type Exhibitor = {
+  name: string
+  img: string
+  /** The exhibitor's page on aiforgood.itu.int. */
+  href: string
+}
+
+/** From the exhibitor showcase on aiforgood.itu.int/summit27. */
+export const EXHIBITORS_2026: Exhibitor[] = [
+  {
+    name: 'Aperobot',
+    img: '/img/exhibitors/aperobot.jpg',
+    href: 'https://aiforgood.itu.int/speaker/aperobot/',
+  },
+  {
+    name: 'Jupiter',
+    img: '/img/exhibitors/jupiter.jpg',
+    href: 'https://aiforgood.itu.int/speaker/jupiter/',
+  },
+  {
+    name: 'Live Biosonification Performance',
+    img: '/img/exhibitors/live-biosonification-performance.png',
+    href: 'https://aiforgood.itu.int/speaker/live-biosonification-performance/',
+  },
+  {
+    name: 'N1',
+    img: '/img/exhibitors/n1.jpeg',
+    href: 'https://aiforgood.itu.int/speaker/n1/',
+  },
+  {
+    name: 'Roboclette',
+    img: '/img/exhibitors/roboclette.jpg',
+    href: 'https://aiforgood.itu.int/speaker/roboclette/',
+  },
+  {
+    name: 'uMe',
+    img: '/img/exhibitors/ume.jpg',
+    href: 'https://aiforgood.itu.int/speaker/ume/',
+  },
+  {
+    name: 'Unitree G1',
+    img: '/img/exhibitors/unitree-g1.jpg',
+    href: 'https://aiforgood.itu.int/speaker/unitree-g1/',
+  },
+  {
+    name: 'WallBo',
+    img: '/img/exhibitors/wallbo.jpg',
+    href: 'https://aiforgood.itu.int/speaker/wallbo-the-handwashing-robot-buddy/',
+  },
+]
+
 export type Logo = { name: string; src: string; href?: string }
 
 /** The UN agencies AI for Good partners with, as shown on aiforgood.itu.int/summit27. */
