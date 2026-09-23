@@ -1156,6 +1156,19 @@
     animation: none !important;
     transition-duration: 0.001s !important;
   }
+
+  /*
+   * The stats ticker and UN partners marquee are decorative, ambient motion
+   * rather than something the page does at the user — keep them scrolling
+   * even when the OS asks everything else to hold still.
+   */
+  .tickerTrack {
+    animation: marquee 34s linear infinite !important;
+  }
+
+  .partnersTrack {
+    animation: marquee 60s linear infinite !important;
+  }
 }
 
 /* ── Responsive ────────────────────────────────────────────────

@@ -265,15 +265,37 @@ test.describe('Summit 2027', () => {
       .toBe(0)
   })
 
-  test('the marquee stops entirely under reduced motion', async ({ page }) => {
+  test('the stats ticker and partners marquee keep moving under reduced motion', async ({
+    page,
+  }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(URL)
-    const track = page.locator(mod('tickerTrack'))
-    await expect(track).toHaveCSS('animation-name', 'none')
-    // Parked at its start, not raced to the end.
-    const x = await track.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41)
-    expect(x).toBe(0)
+
+    // Decorative, ambient motion is exempted — these two keep scrolling
+    // regardless of the OS preference.
+    const readX = (loc: ReturnType<Page['locator']>) =>
+      loc.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41)
+
+    const ticker = page.locator(mod('tickerTrack'))
+    await expect(ticker).toHaveCSS('animation-name', /marquee/)
+    const tickerStart = await readX(ticker)
+    await page.waitForTimeout(600)
+    expect(await readX(ticker)).not.toBe(tickerStart)
+
+    // Scroll a stable neighbour into view — the track itself never settles,
+    // since it is perpetually translating, which Playwright waits forever for.
+    await page.locator('#un-partners').scrollIntoViewIfNeeded()
+    const partners = page.locator(mod('partnersTrack'))
+    await expect(partners).toHaveCSS('animation-name', /marquee/)
+    const partnersStart = await readX(partners)
+    await page.waitForTimeout(600)
+    expect(await readX(partners)).not.toBe(partnersStart)
+
+    // Everything else still honours the preference: transitions collapse to
+    // effectively instant, as the global rule sets for `.root *`.
+    const themeTile = page.locator(mod('themeTile')).first()
+    await expect(themeTile).toHaveCSS('transition-duration', '0.001s')
   })
 
   test('the newsletter popup submits without leaving the page', async ({ page }) => {
