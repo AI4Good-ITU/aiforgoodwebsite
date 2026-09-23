@@ -13,6 +13,11 @@ import './styles.css'
 const RESTORE_THEME = `try{var t=localStorage.getItem('summit-theme');if(t==='light'||t==='dark'){document.documentElement.dataset.theme=t}}catch(e){}`
 
 export const metadata = {
+  // Resolves relative URLs in page-level metadata (og:image, twitter:image,
+  // etc.) against the real domain. Without this, Next falls back to
+  // localhost, which is unreachable to link-preview scrapers like Teams,
+  // Slack or X.
+  metadataBase: new URL('https://2027summit.aiforgood.itu.int'),
   description: 'AI for Good website.',
   title: 'AI for Good',
 }
