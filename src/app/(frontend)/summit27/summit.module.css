@@ -533,6 +533,20 @@
 
 /* ── 2026 Exhibitors ──────────────────────────────────────── */
 
+/*
+ * Same look as .lede, but without its 74px bottom margin: that stacks with
+ * .sectionHead's own 62px (they don't collapse across the flex-item
+ * boundary), which is too much space above a carousel. The section head's
+ * margin alone is enough here.
+ */
+.exhibitorsLede {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text-2);
+  max-width: 790px;
+}
+
 .exhibitorsViewport {
   position: relative;
 }
@@ -615,15 +629,17 @@
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: 140px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 44px;
   height: 44px;
   background: var(--bg);
   border: 1px solid var(--line);
   border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(10, 10, 10, 0.18);
+  z-index: 1;
   color: var(--text);
   cursor: pointer;
-  transform: translateY(-50%);
 }
 
 .exhibitorNav:hover {
@@ -631,7 +647,7 @@
 }
 
 .exhibitorNavPrev {
-  left: -22px;
+  left: 12px;
 }
 
 .exhibitorNavPrev svg {
@@ -639,7 +655,7 @@
 }
 
 .exhibitorNavNext {
-  right: -22px;
+  right: 12px;
 }
 
 .exhibitorsBtnDesktop {

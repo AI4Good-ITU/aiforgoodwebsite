@@ -507,7 +507,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
             <div className={styles.sectionHead}>
               <div>
                 <h2 className={styles.h2}>Discover the 2026 exhibitors</h2>
-                <p className={styles.lede}>
+                <p className={styles.exhibitorsLede}>
                   Get ready to be inspired with our exciting range of exhibitors showcasing the
                   latest AI breakthroughs and innovative solutions.
                 </p>
