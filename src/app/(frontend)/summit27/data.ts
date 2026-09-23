@@ -314,6 +314,26 @@ export const SPONSOR_TIERS: SponsorTier[] = [
     ],
   },
   {
+    label: 'Innovation Factory Local Chapters',
+    logos: [
+      {
+        name: 'Government of Catalonia',
+        src: '/img/sponsors/gencat.png',
+        href: 'https://web.gencat.cat/ca/ciutadania/inici',
+      },
+      {
+        name: 'Akbank LAB',
+        src: '/img/sponsors/akbank-lab.png',
+        href: 'https://www.akbanklab.com/tr/ana-sayfa',
+      },
+      {
+        name: 'Innovate Australia',
+        src: '/img/sponsors/innovate-australia.jpg',
+        href: 'https://innovateaustralia.org/',
+      },
+    ],
+  },
+  {
     label: 'Media partners',
     logos: [
       { name: 'AI Magazine', src: '/img/sponsors/ai-magazine.png', href: 'https://aimagazine.com/' },

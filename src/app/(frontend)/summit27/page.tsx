@@ -8,7 +8,7 @@ import { avenir } from './fonts'
 
 const TITLE = 'AI for Good Global Summit 2027'
 const DESCRIPTION =
-  'The AI for Good Global Summit 2026, led by ITU, aims to unlock AI’s potential to serve humanity through building skills and standards, and advancing partnerships to solve global challenges.'
+  'The AI for Good Global Summit 2027, led by ITU, aims to unlock AI’s potential to serve humanity through building skills and standards, and advancing partnerships to solve global challenges.'
 const OG_IMAGE = '/img/summit27-og.jpg'
 
 export const metadata: Metadata = {

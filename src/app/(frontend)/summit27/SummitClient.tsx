@@ -436,7 +436,9 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
             </div>
             <div className={`${styles.exhibitionCopy} ${styles.reveal}`} data-reveal="1">
               <Eyebrow>The exhibition</Eyebrow>
-              <h2 className={styles.exhibitionTitle}>Two hundred stands you can actually touch.</h2>
+              <h2 className={styles.exhibitionTitle}>
+                Explore AI innovations with real world impact
+              </h2>
               <p className={styles.exhibitionBody}>
                 Explore cutting-edge AI demos and experience the latest innovations firsthand.
               </p>

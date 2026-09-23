@@ -48,7 +48,7 @@ test.describe('Summit 2027', () => {
     // Section headings, in document order
     for (const heading of [
       'Explore the 2026 speakers',
-      'Two hundred stands you can actually touch.',
+      'Explore AI innovations with real world impact',
       '53 UN Partners',
       '2026 Sponsors',
       'Newsroom',
@@ -74,8 +74,8 @@ test.describe('Summit 2027', () => {
 
     // Collection counts
     await expect(page.locator(mod('speaker'))).toHaveCount(12)
-    await expect(page.locator(mod('tier'))).toHaveCount(9)
-    await expect(page.locator(mod('logoTile'))).toHaveCount(59)
+    await expect(page.locator(mod('tier'))).toHaveCount(10)
+    await expect(page.locator(mod('logoTile'))).toHaveCount(62)
     // Duplicated for the seamless marquee loop: 53 real + 53 aria-hidden clones.
     await expect(page.locator(mod('partnerTile'))).toHaveCount(106)
     await expect(page.locator(mod('newsCard'))).toHaveCount(3)
