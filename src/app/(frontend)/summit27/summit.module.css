@@ -392,6 +392,24 @@
   color: transparent;
 }
 
+.heroSubhead {
+  margin: 20px 0 0;
+  max-width: 492px;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.heroLede {
+  margin: 16px 0 0;
+  max-width: 492px;
+  font-size: 19px;
+  line-height: 1.4;
+  color: var(--text);
+}
+
 .heroBody {
   margin: 21px 0 0;
   max-width: 492px;
@@ -722,32 +740,6 @@
 
 .partnersHead {
   padding-top: var(--section-pad);
-}
-
-.partnersSubhead {
-  margin: 16px 0 0;
-  font-weight: 600;
-  font-size: 28px;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  max-width: 640px;
-}
-
-.partnersLede {
-  margin: 20px 0 0;
-  font-size: 19px;
-  line-height: 1.4;
-  color: var(--text);
-  max-width: 640px;
-}
-
-.partnersText {
-  margin: 12px 0 0;
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--text-2);
-  max-width: 640px;
 }
 
 .partnersViewport {

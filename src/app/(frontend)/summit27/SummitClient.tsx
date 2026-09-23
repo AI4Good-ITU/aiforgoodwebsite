@@ -371,11 +371,15 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 <br />
                 <span className={styles.heroYear}>2027</span>
               </h1>
+              <h3 className={styles.heroSubhead}>
+                The United Nations&rsquo; leading platform on Artificial Intelligence.
+              </h3>
+              <p className={styles.heroLede}>
+                <strong>AI for Good is unlocking AI&rsquo;s potential to serve humanity.</strong>
+              </p>
               <p className={styles.heroBody}>
-                As the leading United Nations (UN) platform on Artificial Intelligence (AI), the
-                Summit is organized by the International Telecommunication Union in partnership
-                with 53 UN partners and co-convened with the Government of Switzerland. The mission
-                of AI for Good is to unlock AI&rsquo;s potential to serve humanity.
+                AI for Good is organized by ITU in partnership with over 50 UN partners and
+                co-convened with the Government of Switzerland.
               </p>
               <p className={styles.heroBody}>
                 As a multi-stakeholder platform, AI for Good identifies innovative AI applications
@@ -437,16 +441,6 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
           <div className={`${styles.shell} ${styles.partnersHead} ${styles.reveal}`} data-reveal="1">
             <Eyebrow>Partners</Eyebrow>
             <h2 className={styles.h2}>53 UN Partners</h2>
-            <h3 className={styles.partnersSubhead}>
-              The United Nations&rsquo; leading platform on Artificial Intelligence.
-            </h3>
-            <p className={styles.partnersLede}>
-              <strong>AI for Good is unlocking AI&rsquo;s potential to serve humanity.</strong>
-            </p>
-            <p className={styles.partnersText}>
-              AI for Good is organized by ITU in partnership with over 50 UN partners and
-              co-convened with the Government of Switzerland.
-            </p>
           </div>
           <div className={styles.partnersViewport}>
             <div className={styles.partnersTrack}>
