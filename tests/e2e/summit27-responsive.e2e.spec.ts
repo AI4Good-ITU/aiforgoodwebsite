@@ -164,6 +164,8 @@ test.describe('Summit 2027 — responsive', () => {
   }) => {
     await open(page, 1440)
     const mark = page.locator(mod('heroMark'))
+    // The mark eases in on load; wait out its entrance before measuring it.
+    await page.waitForTimeout(1300)
     const img = mark.locator('img')
     const box = await img.boundingBox()
     expect(box!.x + box!.width).toBeGreaterThanOrEqual(1440)

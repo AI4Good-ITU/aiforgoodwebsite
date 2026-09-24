@@ -309,6 +309,20 @@
   padding-bottom: 130px;
 }
 
+/* A one-time entrance on load — the mark eases in rather than just appearing.
+   Reduced motion strips the `animation` (see the media query below), which
+   leaves it at its plain, fully-visible resting state. */
+@keyframes heroMarkIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /*
  * The mark is positioned against the viewport rather than placed in a grid
  * column: in the design its right edge runs off the page, and its size is
@@ -321,6 +335,7 @@
   width: 825px;
   pointer-events: none;
   user-select: none;
+  animation: heroMarkIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
 .heroMark img {
