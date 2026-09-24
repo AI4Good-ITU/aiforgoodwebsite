@@ -250,4 +250,22 @@ test.describe('Summit 2027 — responsive', () => {
     expect(Math.round(title!.x)).toBe(32)
     expect(Math.round(eyebrow!.x)).toBe(16)
   })
+
+  test('the exhibitors carousel arrows actually scroll the track', async ({ page }) => {
+    await open(page, 1440)
+    const track = page.locator(mod('exhibitorsTrack'))
+    await track.scrollIntoViewIfNeeded()
+
+    const before = await track.evaluate((el) => el.scrollLeft)
+    await page.locator(mod('exhibitorNavNext')).click()
+    await expect
+      .poll(() => track.evaluate((el) => el.scrollLeft))
+      .toBeGreaterThan(before)
+
+    const afterNext = await track.evaluate((el) => el.scrollLeft)
+    await page.locator(mod('exhibitorNavPrev')).click()
+    await expect
+      .poll(() => track.evaluate((el) => el.scrollLeft))
+      .toBeLessThan(afterNext)
+  })
 })

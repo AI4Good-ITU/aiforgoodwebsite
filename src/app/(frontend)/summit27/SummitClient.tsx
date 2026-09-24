@@ -277,7 +277,9 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
 
   const scrollExhibitors = useCallback((direction: 1 | -1) => {
     const track = exhibitorsTrackRef.current
-    const card = track?.querySelector('a')
+    // The card is a <button> now (it opens the detail panel), not an <a> —
+    // grab the first child directly instead of tying this to its tag.
+    const card = track?.firstElementChild
     if (!track || !card) return
     const style = getComputedStyle(track)
     const gap = parseFloat(style.columnGap || style.gap || '0')
