@@ -307,6 +307,9 @@
   position: relative;
   padding-top: 107px;
   padding-bottom: 130px;
+  /* Empty to the right of .heroText, so let hover reach the mark underneath;
+     .heroText opts its own content back in below. */
+  pointer-events: none;
 }
 
 /* A one-time entrance on load — the mark eases in rather than just appearing.
@@ -333,22 +336,32 @@
   top: 5px;
   right: -2px;
   width: 825px;
-  pointer-events: none;
+  pointer-events: auto;
   user-select: none;
   animation: heroMarkIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
+/* The entrance animation above owns .heroMark's own transform (and its
+   `both` fill-mode keeps holding it after load), so the hover motion goes on
+   the img instead — a different element, so the two never fight over the
+   same property. */
 .heroMark img {
   display: block;
   width: 100%;
   height: auto;
   max-width: none;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.heroMark:hover img {
+  transform: scale(1.05) rotate(-3deg);
 }
 
 .heroText {
   position: relative;
   z-index: 1;
   max-width: 620px;
+  pointer-events: auto;
 }
 
 .heroMeta {
