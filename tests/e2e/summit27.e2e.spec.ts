@@ -53,7 +53,7 @@ test.describe('Summit 2027', () => {
       '53 UN Partners',
       '2026 Sponsors',
       'Newsroom',
-      'Discover the 2026 Summit themes',
+      'Discover the 2026 themes',
       'In their words',
     ]) {
       await expect(page.getByRole('heading', { name: heading })).toBeAttached()

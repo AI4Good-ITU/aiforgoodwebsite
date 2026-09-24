@@ -480,7 +480,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
         <section id="topics" className={styles.section} style={{ background: 'var(--bg)' }}>
           <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
             <Eyebrow>Programme</Eyebrow>
-            <h2 className={styles.h2}>Discover the 2026 Summit themes</h2>
+            <h2 className={styles.h2}>Discover the 2026 themes</h2>
             <div className={styles.themeGrid}>
               {THEMES.map((t) => (
                 <div key={t.title} className={styles.themeTile}>
