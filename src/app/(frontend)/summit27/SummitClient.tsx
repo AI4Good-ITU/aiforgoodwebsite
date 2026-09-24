@@ -854,15 +854,17 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
           {detailItem && (
             <div className={styles.detailPanel}>
               <img className={styles.detailImage} src={detailItem.img} alt="" />
-              <p className={styles.detailDescription}>{detailItem.description}</p>
-              <a
-                href={detailItem.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${styles.moreLink} ${styles.detailReadMore}`}
-              >
-                Read more <Arrow />
-              </a>
+              <p className={styles.detailDescription}>
+                {detailItem.description}{' '}
+                <a
+                  href={detailItem.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.detailReadMore}
+                >
+                  Read more
+                </a>
+              </p>
             </div>
           )}
         </SidePanel>

@@ -1317,7 +1317,15 @@
 }
 
 .detailReadMore {
-  margin-top: 20px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.detailReadMore:hover {
+  opacity: 0.6;
 }
 
 /* ── Keyframes ─────────────────────────────────────────────── */
