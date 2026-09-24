@@ -397,7 +397,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                 <span className={styles.heroYear}>2027</span>
               </h1>
               <h3 className={styles.heroSubhead}>
-                The United Nations&rsquo; leading platform on Artificial Intelligence.
+                The leading United Nations&rsquo; platform on Artificial Intelligence.
               </h3>
               <p className={styles.heroLede}>
                 AI for Good is unlocking AI&rsquo;s potential to serve humanity.
