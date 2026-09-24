@@ -127,6 +127,14 @@ test.describe('Summit 2027', () => {
     await page.keyboard.press('Escape')
     await expect(dialog).toHaveCount(0)
 
+    // Marc Benioff's page has no bio text, so his "description" is just his
+    // short, untruncated role — no "Read more" for nothing extra to read.
+    await page.locator(mod('speaker')).filter({ hasText: 'Marc Benioff' }).click()
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByRole('link', { name: /Read more/ })).toHaveCount(0)
+    await page.keyboard.press('Escape')
+    await expect(dialog).toHaveCount(0)
+
     // Same for a news card — the aggregate "Read all articles" CTA still links out.
     const posts = page.locator(mod('newsCard'))
     await expect(posts.nth(0)).toContainText('21 September 2026')
