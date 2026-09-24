@@ -651,7 +651,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
 
         {/* ── Gallery ── */}
         <section id="gallery" className={styles.section} style={{ background: 'var(--bg)' }}>
-          <div className={`${styles.shell} ${styles.partnersHead} ${styles.reveal}`} data-reveal="1">
+          <div className={`${styles.shell} ${styles.reveal}`} data-reveal="1">
             <Eyebrow>Gallery</Eyebrow>
             <h2 className={styles.h2}>Moments from the Summit floor</h2>
           </div>
