@@ -522,10 +522,10 @@ export const GALLERY: string[] = [
   '/img/gallery/keynote-podium.jpg',
   '/img/gallery/stage-performance.jpg',
   '/img/gallery/keynote-code-screen.jpg',
-  '/img/gallery/john-legend-interview.jpg',
+  '/img/gallery/media-interview.jpg',
   '/img/gallery/group-photo-stage.jpg',
   '/img/gallery/reception-mingling.jpg',
-  '/img/gallery/closing-keynote.jpg',
+  '/img/gallery/robot-crowd.jpg',
   '/img/gallery/gala-dinner.jpg',
 ]
 
