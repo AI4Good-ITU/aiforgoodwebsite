@@ -513,6 +513,22 @@ export const THEMES: Theme[] = [
   { title: 'AI infrastructure', img: '/img/themes/ai-infrastructure.png' },
 ]
 
+/** Photos from the Summit floor, shown as a full-width 6×2 grid before Testimonials. */
+export const GALLERY: string[] = [
+  '/img/gallery/reception-courtyard.jpg',
+  '/img/gallery/cinema-screening.jpg',
+  '/img/gallery/innovation-factory-winners.jpg',
+  '/img/gallery/humanoid-robot.jpg',
+  '/img/gallery/keynote-podium.jpg',
+  '/img/gallery/stage-performance.jpg',
+  '/img/gallery/keynote-code-screen.jpg',
+  '/img/gallery/john-legend-interview.jpg',
+  '/img/gallery/group-photo-stage.jpg',
+  '/img/gallery/reception-mingling.jpg',
+  '/img/gallery/closing-keynote.jpg',
+  '/img/gallery/gala-dinner.jpg',
+]
+
 export type Testimonial = { quote: string; name: string; role: string; img: string }
 
 /** From the closing carousel on aiforgood.itu.int/summit27. */

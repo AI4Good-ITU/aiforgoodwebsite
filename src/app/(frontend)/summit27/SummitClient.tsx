@@ -16,6 +16,7 @@ import {
   ACCENT,
   EXHIBITORS_2026,
   FOOTER_COLUMNS,
+  GALLERY,
   LEGAL_LINKS,
   LINKS,
   NAV_LINKS,
@@ -645,6 +646,21 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
             >
               Read all articles
             </a>
+          </div>
+        </section>
+
+        {/* ── Gallery ── */}
+        <section id="gallery" className={styles.section} style={{ background: 'var(--bg)' }}>
+          <div className={`${styles.shell} ${styles.partnersHead} ${styles.reveal}`} data-reveal="1">
+            <Eyebrow>Gallery</Eyebrow>
+            <h2 className={styles.h2}>Moments from the Summit floor</h2>
+          </div>
+          <div className={styles.galleryGrid}>
+            {GALLERY.map((src) => (
+              <div key={src} className={styles.galleryTile}>
+                <img className={styles.galleryImg} src={src} alt="" loading="lazy" />
+              </div>
+            ))}
           </div>
         </section>
 
