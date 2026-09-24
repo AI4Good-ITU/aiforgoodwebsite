@@ -265,6 +265,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
     title: string
     meta?: string
     description: string
+    href: string
   } | null>(null)
 
   const rootRef = useRef<HTMLDivElement>(null)
@@ -444,6 +445,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                       title: p.name,
                       meta: p.role,
                       description: p.description,
+                      href: p.href,
                     })
                   }
                 >
@@ -543,7 +545,12 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                     type="button"
                     className={styles.exhibitorCard}
                     onClick={() =>
-                      setDetailItem({ img: e.img, title: e.name, description: e.description })
+                      setDetailItem({
+                        img: e.img,
+                        title: e.name,
+                        description: e.description,
+                        href: e.href,
+                      })
                     }
                   >
                     <div className={styles.exhibitorImgWrap}>
@@ -615,6 +622,7 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                       title: n.title,
                       meta: n.date,
                       description: n.description,
+                      href: n.href,
                     })
                   }
                 >
@@ -847,6 +855,14 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
             <div className={styles.detailPanel}>
               <img className={styles.detailImage} src={detailItem.img} alt="" />
               <p className={styles.detailDescription}>{detailItem.description}</p>
+              <a
+                href={detailItem.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${styles.moreLink} ${styles.detailReadMore}`}
+              >
+                Read more <Arrow />
+              </a>
             </div>
           )}
         </SidePanel>

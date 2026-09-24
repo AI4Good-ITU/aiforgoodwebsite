@@ -1316,6 +1316,10 @@
   color: var(--text-2);
 }
 
+.detailReadMore {
+  margin-top: 20px;
+}
+
 /* ── Keyframes ─────────────────────────────────────────────── */
 
 @keyframes marquee {

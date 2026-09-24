@@ -109,6 +109,13 @@ test.describe('Summit 2027', () => {
       'src',
       '/img/speakers/doreen-bogdan-martin.jpg',
     )
+    // The cropped description still links out to the real page, just not by default.
+    const readMore = dialog.getByRole('link', { name: /Read more/ })
+    await expect(readMore).toHaveAttribute(
+      'href',
+      'https://aiforgood.itu.int/speaker/doreen-bogdan-martin/',
+    )
+    await expect(readMore).toHaveAttribute('target', '_blank')
     expect(page.url()).toBe(URL)
     await page.keyboard.press('Escape')
     await expect(dialog).toHaveCount(0)
