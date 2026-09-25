@@ -445,7 +445,7 @@ export const SPONSOR_TIERS: SponsorTier[] = [
 
 export const TICKER_ITEMS = [
   '21–24 June 2027',
-  '1,200+ speakers',
+  '800+ speakers',
   '250+ exhibitors',
   '50+ UN agencies',
   'Palexpo, Geneva',
