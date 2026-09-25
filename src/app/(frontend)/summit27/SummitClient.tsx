@@ -427,8 +427,22 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
           </div>
         </div>
 
+        {/* ── UN partners ── */}
+        <section id="un-partners" className={styles.section} style={{ background: 'var(--bg)' }}>
+          <div className={`${styles.shell} ${styles.partnersHead} ${styles.reveal}`} data-reveal="1">
+            <Eyebrow>Partners</Eyebrow>
+            <h2 className={styles.h2}>53 UN Partners</h2>
+          </div>
+          <div className={styles.partnersViewport}>
+            <div className={styles.partnersTrack}>
+              <PartnerRun />
+              <PartnerRun ariaHidden />
+            </div>
+          </div>
+        </section>
+
         {/* ── Speakers ── */}
-        <section id="speakers" className={styles.section} style={{ background: 'var(--bg)' }}>
+        <section id="speakers" className={styles.section} style={{ background: 'var(--bg-2)' }}>
           <div className={`${styles.shell} ${styles.sectionPad} ${styles.reveal}`} data-reveal="1">
             <div className={styles.sectionHead}>
               <div>
@@ -459,20 +473,6 @@ export default function SummitClient({ themeClass }: { themeClass: string }) {
                   <div className={styles.speakerRole}>{p.role}</div>
                 </button>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── UN partners ── */}
-        <section id="un-partners" className={styles.section} style={{ background: 'var(--bg-2)' }}>
-          <div className={`${styles.shell} ${styles.partnersHead} ${styles.reveal}`} data-reveal="1">
-            <Eyebrow>Partners</Eyebrow>
-            <h2 className={styles.h2}>53 UN Partners</h2>
-          </div>
-          <div className={styles.partnersViewport}>
-            <div className={styles.partnersTrack}>
-              <PartnerRun />
-              <PartnerRun ariaHidden />
             </div>
           </div>
         </section>
